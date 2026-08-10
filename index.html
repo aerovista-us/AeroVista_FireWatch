@@ -18,6 +18,81 @@
   <meta name="twitter:title" content="AeroVista FireWatch Command">
   <meta name="twitter:description" content="Real-time multi-source wildfire awareness for North Idaho.">
   <meta name="twitter:image" content="./aerovista-firewatch-social.png">
+  <!-- AV:INJECT:BEGIN id="umami-analytics" -->
+  <script>
+    (() => {
+      const config = Object.freeze({
+        host: 'https://stats.aerocoreos.com',
+        websiteId: 'REPLACE_WITH_UMAMI_WEBSITE_ID',
+        domains: 'aerovista-us.github.io'
+      });
+      const validWebsiteId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(config.websiteId);
+      if (!validWebsiteId) return;
+
+      const params = new URLSearchParams(window.location.search || '');
+      const utm = {
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || ''
+      };
+      const referrer = (() => {
+        try { return document.referrer ? new URL(document.referrer).hostname : ''; }
+        catch { return ''; }
+      })();
+
+      const tracker = document.createElement('script');
+      tracker.defer = true;
+      tracker.src = `${config.host}/script.js`;
+      tracker.dataset.websiteId = config.websiteId;
+      if (config.domains) tracker.dataset.domains = config.domains;
+      document.head.appendChild(tracker);
+
+      const clean = value => String(value || '').replace(/\s+/g, ' ').trim().slice(0, 100);
+      const send = (eventName, data = {}) => {
+        const payload = { ...data, referrer, ...Object.fromEntries(Object.entries(utm).filter(([, v]) => v)) };
+        if (window.umami && typeof window.umami.track === 'function') window.umami.track(eventName, payload);
+      };
+
+      tracker.addEventListener('load', () => {
+        send('firewatch_page_view', { path: clean(window.location.pathname) });
+      });
+
+      document.addEventListener('click', event => {
+        const control = event.target.closest('a,button');
+        if (!control) return;
+
+        if (control.id === 'refreshBtn') return send('firewatch_refresh', { location: clean(document.getElementById('locationTitle')?.textContent) });
+        if (control.id === 'locateBtn') return send('firewatch_geolocate');
+        if (control.id === 'mapOpen') return send('firewatch_map_open', { map: clean(document.getElementById('mapTitle')?.textContent) });
+
+        const location = control.closest('.location');
+        if (location) return send('firewatch_location', { location: clean(location.querySelector('strong')?.textContent) });
+
+        const mapTab = control.closest('[data-map]');
+        if (mapTab) return send('firewatch_map_tab', { map: clean(mapTab.textContent) });
+
+        const snap = control.closest('.cam-snap');
+        if (snap) return send('firewatch_camera_snapshot', { camera: clean(snap.querySelector('strong')?.textContent), cctv: clean(snap.dataset.cctv) });
+
+        const camera = control.closest('.camera-card');
+        if (camera) return send('firewatch_camera_open', { camera: clean(camera.querySelector('h3')?.textContent) });
+
+        const source = control.closest('.launch');
+        if (source) return send('firewatch_source_open', { source: clean(source.querySelector('strong')?.textContent) });
+
+        const health = control.closest('.source');
+        if (health) return send('firewatch_health_open', { source: clean(health.querySelector('strong')?.textContent) });
+
+        const alert = control.closest('.hazard');
+        if (alert) return send('firewatch_alert_open', { alert: clean(alert.querySelector('strong')?.textContent) });
+
+        if (control.href && control.href.includes('weather.gov')) send('firewatch_nws_open');
+      }, { passive: true });
+    })();
+  </script>
+  <!-- AV:INJECT:END id="umami-analytics" -->
   <style>
     :root{--bg:#080a0d;--panel:#101419;--panel2:#151a20;--line:#293039;--soft:#1d232a;--text:#f1f3f5;--muted:#89949f;--dim:#59646e;--red:#ff4b3e;--amber:#ffb020;--blue:#4aa8ff;--green:#35d394;--violet:#a87cff;--teal:#37c7c4;font-family:Inter,Segoe UI,Arial,sans-serif;color-scheme:dark}
     *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(circle at 78% -10%,rgba(255,75,62,.08),transparent 27rem),linear-gradient(180deg,#0b0e11,var(--bg) 33rem)}button,a{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}.mono{font-family:Consolas,ui-monospace,monospace}.eyebrow{color:#75808b;font:700 9px/1.2 Consolas,monospace;letter-spacing:.18em}.topbar{position:sticky;top:0;z-index:20;height:72px;display:grid;grid-template-columns:300px 1fr 300px;align-items:center;border-bottom:1px solid var(--line);background:rgba(8,10,13,.94);backdrop-filter:blur(18px)}

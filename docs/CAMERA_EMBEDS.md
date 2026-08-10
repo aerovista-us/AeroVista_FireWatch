@@ -18,6 +18,10 @@ The camera matrix mixes **in-page snapshots** with **link-outs** based on what e
 | **CDA Resort live-feed** | Verkada embed domain-locked to `*.cdaresort.com` |
 | **IDL camera inventory** | Heavy ArcGIS viewer — also on the **Fire cameras** map tab |
 
+## Analytics
+
+Umami is wired inline via `AV:INJECT id="umami-analytics"` (host `https://stats.aerocoreos.com`). Tracking stays disabled until `websiteId` is a real UUID. See injection-publisher `docs/FIREWATCH_RUNBOOK.md`.
+
 ## Maintaining 511 image IDs
 
 Image ids come from Idaho 511 camera list APIs (`images[].id`), not always the map icon `itemId`. Re-verify with a GET that returns `image/jpeg` before changing `SNAP_CAMS`.
