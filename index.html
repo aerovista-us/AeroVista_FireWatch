@@ -12,13 +12,13 @@
   <meta property="og:type" content="website">
 <meta property="og:url" content="https://aerovista-us.github.io/AeroVista_FireWatch/">
   <meta property="og:title" content="AeroVista FireWatch Command">
-  <meta property="og:description" content="North Idaho wildfire awareness — official alerts, maps, and camera signals in one command view.">
+  <meta property="og:description" content="North Idaho wildfire awareness - official alerts, maps, and camera signals in one command view.">
   <meta property="og:image" content="https://aerovista-us.github.io/AeroVista_FireWatch/aerovista-firewatch-social.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="AeroVista FireWatch Command">
-  <meta name="twitter:description" content="North Idaho wildfire awareness — official alerts, maps, and camera signals in one command view.">
+  <meta name="twitter:description" content="North Idaho wildfire awareness - official alerts, maps, and camera signals in one command view.">
   <meta name="twitter:image" content="https://aerovista-us.github.io/AeroVista_FireWatch/aerovista-firewatch-social.png">
   <!-- AV:INJECT:BEGIN id="umami-analytics" -->
   <script>
@@ -140,7 +140,7 @@
     <aside>
       <div class="eyebrow">MONITORED LOCATIONS</div>
       <div class="locations" id="locations"></div>
-      <button class="locate" id="locateBtn">âŒ– USE MY LOCATION</button>
+      <button class="locate" id="locateBtn">âŒ- USE MY LOCATION</button>
       <div class="rule"></div>
       <div class="eyebrow">FAILOVER LADDER</div>
       <ol class="ladder">
@@ -154,32 +154,32 @@
     </aside>
     <main>
       <section class="hero">
-        <div><div class="eyebrow">REGIONAL OPERATIONS PICTURE</div><h1 id="locationTitle">Coeur dâ€™Alene</h1><p>One view. Multiple independent signals. Explicit fallbacks.</p></div>
+        <div><div class="eyebrow">REGIONAL OPERATIONS PICTURE</div><h1 id="locationTitle">Coeur d'Alene</h1><p>One view. Multiple independent signals. Explicit fallbacks.</p></div>
         <div class="stamp"><span>LAST LIVE CHECK</span><strong id="relativeTime">NOT YET</strong><small id="fullTime">Waiting for live sources</small></div>
       </section>
       <div class="fallback" id="fallback"><b>FALLBACK MODE</b><span id="fallbackText">One or more feeds could not be read automatically. Direct official links remain available.</span></div>
       <section class="metrics">
         <article class="metric alert" id="countyMetric"><label>COUNTY EVACUATION</label><strong>LINK-ONLY</strong><small>Open sheriff source for binding orders</small></article>
-        <article class="metric"><label>NWS ACTIVE HAZARDS</label><strong id="hazardCount">â€”</strong><small id="hazardSummary">Official point-alert feed</small></article>
+        <article class="metric"><label>NWS ACTIVE HAZARDS</label><strong id="hazardCount">-</strong><small id="hazardSummary">Official point-alert feed</small></article>
         <article class="metric"><label>LOCAL FIRE DANGER</label><strong style="font-size:23px">VERIFY LIVE</strong><small>City and IDL direct sources below</small></article>
         <article class="metric coverage"><label>SOURCE PATHS</label><strong id="coverage">1/7</strong><small>Automatic live feeds / total paths</small></article>
       </section>
       <section class="panel">
         <div class="heading"><div><div class="eyebrow">LIVE MAP SURFACE</div><h2 id="mapTitle">Idaho fires</h2></div><div class="tabs" id="mapTabs"></div></div>
-        <div class="map-wrap"><iframe id="mapFrame" title="Official Idaho wildfire map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-badge"><b><i></i>LIVE EXTERNAL LAYER</b><small id="mapCaption">Official IRWIN incident layer</small></div><a class="map-open" id="mapOpen" target="_blank" rel="noopener">â†— OPEN OFFICIAL FULL MAP</a></div>
+        <div class="map-wrap"><iframe id="mapFrame" title="Official Idaho wildfire map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-badge"><b><i></i>LIVE EXTERNAL LAYER</b><small id="mapCaption">Official IRWIN incident layer</small></div><a class="map-open" id="mapOpen" target="_blank" rel="noopener">â†- OPEN OFFICIAL FULL MAP</a></div>
       </section>
-      <section class="panel"><div class="heading"><div><div class="eyebrow">VISUAL CONFIRMATION NETWORK</div><h2>FireWatch camera matrix</h2></div><span class="camera-note">511 SNAPSHOTS IN-PAGE Â· ALERTWEST / AI / FAA OPEN AS LINKS</span></div><div id="cameraGrid"></div></section>
+      <section class="panel"><div class="heading"><div><div class="eyebrow">VISUAL CONFIRMATION NETWORK</div><h2>FireWatch camera matrix</h2></div><span class="camera-note">511 SNAPSHOTS IN-PAGE - ALERTWEST / AI / FAA OPEN AS LINKS</span></div><div id="cameraGrid"></div></section>
       <div class="lower">
-        <section class="panel"><div class="heading"><div><div class="eyebrow">ACTIVE BULLETINS</div><h2>NWS alert stream</h2></div><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener" class="mono" style="font-size:9px;color:#75818b">NWS SPOKANE â†—</a></div><div class="hazards" id="hazards"><div class="empty"><span>â€¦</span><div><strong>Loading official point alerts</strong><small>NWS API is queried directly from this browser.</small></div></div></div></section>
+        <section class="panel"><div class="heading"><div><div class="eyebrow">ACTIVE BULLETINS</div><h2>NWS alert stream</h2></div><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener" class="mono" style="font-size:9px;color:#75818b">NWS SPOKANE â†-</a></div><div class="hazards" id="hazards"><div class="empty"><span>â€¦</span><div><strong>Loading official point alerts</strong><small>NWS API is queried directly from this browser.</small></div></div></div></section>
         <section class="panel"><div class="heading"><div><div class="eyebrow">TELEMETRY HEALTH</div><h2>Source integrity</h2></div></div><div class="health" id="health"></div></section>
       </div>
       <section class="panel"><div class="heading"><div><div class="eyebrow">DIRECT INTELLIGENCE</div><h2>Fallback launch deck</h2></div><span class="mono" style="font-size:8px;color:#5e6972">ALWAYS AVAILABLE</span></div><div class="launch-grid" id="launchGrid"></div></section>
-      <footer><div><strong>AV // FIREWATCH COMMAND</strong>Operational awarenessâ€”not an emergency dispatch system.</div><div style="text-align:right"><strong>DATA PRIORITY</strong>SHERIFF â†’ IDL / USFS â†’ NWS â†’ FIELD SIGNALS</div></footer>
+      <footer><div><strong>AV // FIREWATCH COMMAND</strong>Operational awareness-not an emergency dispatch system.</div><div style="text-align:right"><strong>DATA PRIORITY</strong>SHERIFF â†' IDL / USFS â†' NWS â†' FIELD SIGNALS</div></footer>
     </main>
   </div>
   <script>
     const LOCATIONS=[
-      {name:'Coeur dâ€™Alene',short:'CDA',lat:47.6777,lon:-116.7805},
+      {name:'Coeur d'Alene',short:'CDA',lat:47.6777,lon:-116.7805},
       {name:'Spirit Lake',short:'83869',lat:47.9663,lon:-116.8685},
       {name:'Priest River',short:'83856',lat:48.1802,lon:-116.9110}
     ];
@@ -188,21 +188,21 @@
       {id:'zones',label:'Evacuation zones',caption:'Kootenai County Know Your Zone',src:'https://gis.kcgov.us/app/KCEarth_Evac_Zone_Pub/',href:'https://www.kcsheriff.com/317/Know-Your-Zone'},
       {id:'cameras',label:'Fire cameras',caption:'IDL statewide camera inventory and status',src:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c',href:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c'}
     ];
-    /* Idaho 511 snapshots embed; AlertWest Stream iframes did not play reliably cross-origin â€” keep as links. */
+    /* Idaho 511 snapshots embed; AlertWest Stream iframes did not play reliably cross-origin - keep as links. */
     const SNAP_CAMS=[
-      {n:'I-90 Â· 4th of July Summit',a:'East of CDA Â· ridge corridor',id:531},
-      {n:'I-90 Â· Cataldo',a:'Silver Valley approach',id:528},
-      {n:'I-90 Â· Veterans Memorial',a:'Coeur dâ€™Alene lake crossing',id:534},
-      {n:'I-90 Â· Railroad Bridge',a:'Post Falls corridor',id:545},
-      {n:'US-95 Â· Sandpoint',a:'Bonner County north',id:574},
-      {n:'I-90 Â· Wallace',a:'East Panhandle corridor',id:521}
+      {n:'I-90 - 4th of July Summit',a:'East of CDA - ridge corridor',id:531},
+      {n:'I-90 - Cataldo',a:'Silver Valley approach',id:528},
+      {n:'I-90 - Veterans Memorial',a:'Coeur d'Alene lake crossing',id:534},
+      {n:'I-90 - Railroad Bridge',a:'Post Falls corridor',id:545},
+      {n:'US-95 - Sandpoint',a:'Bonner County north',id:574},
+      {n:'I-90 - Wallace',a:'East Panhandle corridor',id:521}
     ];
     const LINK_CAMS=[
-      {n:'St. Joe Baldy',a:'ALERTWest PTZ Â· southern Panhandle â€” open console for live play',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/11053',badge:'OPEN LIVE'},
-      {n:'Black Mtn Boundary',a:'ALERTWest PTZ Â· north Panhandle â€” open console for live play',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/8598',badge:'OPEN LIVE'},
-      {n:'IDL Camera Network',a:'Statewide inventory â€” also on Fire cameras map tab',t:'MAP',k:'map',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c',badge:'OPEN MAP'},
-      {n:'Gold Mountain Â· Sagle',a:'Avista WildfireWatch blocks embeds (frame-ancestors none)',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9',badge:'EXTERNAL ONLY'},
-      {n:'Gold Cup Â· Laclede',a:'Avista WildfireWatch blocks embeds (frame-ancestors none)',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72',badge:'EXTERNAL ONLY'},
+      {n:'St. Joe Baldy',a:'ALERTWest PTZ - southern Panhandle - open console for live play',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/11053',badge:'OPEN LIVE'},
+      {n:'Black Mtn Boundary',a:'ALERTWest PTZ - north Panhandle - open console for live play',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/8598',badge:'OPEN LIVE'},
+      {n:'IDL Camera Network',a:'Statewide inventory - also on Fire cameras map tab',t:'MAP',k:'map',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c',badge:'OPEN MAP'},
+      {n:'Gold Mountain - Sagle',a:'Avista WildfireWatch blocks embeds (frame-ancestors none)',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9',badge:'EXTERNAL ONLY'},
+      {n:'Gold Cup - Laclede',a:'Avista WildfireWatch blocks embeds (frame-ancestors none)',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72',badge:'EXTERNAL ONLY'},
       {n:'Mica Peak FAA',a:'FAA WeatherCams require auth for image API',t:'VISUAL',k:'visual',u:'https://weathercams.faa.gov/map/-117.08111%2C46.93756%2C8/rco/1507/details',badge:'EXTERNAL ONLY'},
       {n:'CDA Lake Live',a:'Verkada feed is domain-locked to cdaresort.com',t:'VISUAL',k:'visual',u:'https://www.cdaresort.com/live-feed/',badge:'EXTERNAL ONLY'},
       {n:'Idaho 511 map',a:'Full statewide CCTV map (snapshots above refresh in-page)',t:'VISUAL',k:'visual',u:'https://511.idaho.gov/map',badge:'OPEN MAP'}
@@ -219,15 +219,15 @@
     function esc(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
     function renderLocations(){ $('locations').innerHTML=LOCATIONS.map((x,i)=>`<button class="location ${x.name===locationState.name?'active':''}" data-i="${i}"><span>${x.short}</span><strong>${x.name}</strong><small>${x.lat.toFixed(2)} / ${Math.abs(x.lon).toFixed(2)}W</small></button>`).join('');document.querySelectorAll('.location').forEach(b=>b.onclick=()=>{locationState=LOCATIONS[+b.dataset.i];$('locationTitle').textContent=locationState.name;renderLocations();refresh()}) }
     function setMap(id){const m=MAPS.find(x=>x.id===id)||MAPS[0];$('mapTitle').textContent=m.label;$('mapCaption').textContent=m.caption;$('mapFrame').src=m.src;$('mapOpen').href=m.href;$('mapTabs').innerHTML=MAPS.map(x=>`<button class="${x.id===m.id?'active':''}" data-map="${x.id}">${x.label}</button>`).join('');document.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>setMap(b.dataset.map))}
-    function renderLaunch(){ $('launchGrid').innerHTML=SOURCES.map((s,i)=>`<a class="launch ${s.c}" href="${s.u}" target="_blank" rel="noopener"><span>0${i+1}</span><div><strong>${s.n}</strong><small>${s.r}</small></div><em>â†—</em></a>`).join('') }
+    function renderLaunch(){ $('launchGrid').innerHTML=SOURCES.map((s,i)=>`<a class="launch ${s.c}" href="${s.u}" target="_blank" rel="noopener"><span>0${i+1}</span><div><strong>${s.n}</strong><small>${s.r}</small></div><em>â†-</em></a>`).join('') }
     function snapUrl(id){return `https://511.idaho.gov/map/Cctv/${id}?t=${Date.now()}`}
     function renderCameras(){
       const snaps=SNAP_CAMS.map(c=>`<article class="cam-snap" data-cctv="${c.id}"><a class="thumb" href="https://511.idaho.gov/map" target="_blank" rel="noopener"><img src="${snapUrl(c.id)}" alt="${esc(c.n)} traffic camera" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a><div class="cam-snap-meta"><div><strong>${esc(c.n)}</strong><small>${esc(c.a)}</small></div><span>511</span></div></article>`).join('');
       const links=LINK_CAMS.map(c=>{
         const action=c.badge==='OPEN MAP'?'OPEN OFFICIAL MAP':c.badge==='OPEN LIVE'?'OPEN LIVE CAMERA':'OPEN PROVIDER';
-        return `<a class="camera-card link-only" href="${esc(c.u)}" target="_blank" rel="noopener"><div><div class="cam-top"><span class="cam-type ${esc(c.k)}">${esc(c.t)}</span><span class="cam-live"><i></i> ${esc(c.badge||'LINK')}</span></div><h3>${esc(c.n)}</h3><p>${esc(c.a)}</p></div><div class="cam-action"><span>${action}</span><span>â†—</span></div></a>`;
+        return `<a class="camera-card link-only" href="${esc(c.u)}" target="_blank" rel="noopener"><div><div class="cam-top"><span class="cam-type ${esc(c.k)}">${esc(c.t)}</span><span class="cam-live"><i></i> ${esc(c.badge||'LINK')}</span></div><h3>${esc(c.n)}</h3><p>${esc(c.a)}</p></div><div class="cam-action"><span>${action}</span><span>â†-</span></div></a>`;
       }).join('');
-      $('cameraGrid').innerHTML=`<div class="cam-section-label">IDAHO 511 CORRIDOR SNAPSHOTS Â· AUTO-REFRESH ~90S</div><div class="cam-snap-grid">${snaps}</div><div class="cam-section-label">ALERTWEST Â· AI Â· FAA Â· GIS Â· OPEN IN NEW TAB</div><div class="camera-grid">${links}</div>`;
+      $('cameraGrid').innerHTML=`<div class="cam-section-label">IDAHO 511 CORRIDOR SNAPSHOTS - AUTO-REFRESH ~90S</div><div class="cam-snap-grid">${snaps}</div><div class="cam-section-label">ALERTWEST - AI - FAA - GIS - OPEN IN NEW TAB</div><div class="camera-grid">${links}</div>`;
     }
     function refreshSnapshots(){
       document.querySelectorAll('.cam-snap[data-cctv]').forEach(card=>{
@@ -240,9 +240,9 @@
       });
     }
     function healthRow(name,detail,state,url){return `<a class="source ${state}" href="${url}" target="_blank" rel="noopener"><i></i><div><strong>${name}</strong><small>${detail}</small></div><time>${lastCheck?'NOW':'READY'}</time></a>`}
-    function updateHealth(nwsOk){$('health').innerHTML=healthRow('NWS active alerts',nwsOk?'Live JSON feed responding':'Automatic feed blockedâ€”direct link ready',nwsOk?'live':'warn','https://www.weather.gov/otx/')+healthRow('Kootenai County Sheriff','Official evacuation ordersâ€”manual verification','warn','https://www.kcsheriff.com/228/Alert-Kootenai')+healthRow('Idaho Fire Map','Official IRWIN layer embedded','live','https://www.idl.idaho.gov/fire-management/idaho-fire-map/')+healthRow('Watch Duty','Human-curated incident fallback ready','live','https://app.watchduty.org/')+healthRow('Idaho 511 + ALERTWest','Corridor snapshots in-page Â· ALERTWest opens live console','live','https://alertwest.live/')}
-    async function refresh(){if(refreshing)return;refreshing=true;$('refreshBtn').disabled=true;$('refreshBtn').textContent='â†» SYNCING';$('topStatus').textContent='SYNCING LIVE SOURCES';$('pulse').className='pulse';try{const url=`https://api.weather.gov/alerts/active?point=${locationState.lat},${locationState.lon}`;const res=await fetch(url,{headers:{Accept:'application/geo+json'}});if(!res.ok)throw new Error(`NWS ${res.status}`);const data=await res.json();const features=Array.isArray(data.features)?data.features:[];renderHazards(features);lastCheck=new Date();$('hazardCount').textContent=features.length;$('hazardSummary').textContent=features.length?`${features.length} official active bulletin${features.length===1?'':'s'}`:'No active NWS point hazards';$('coverage').textContent='4/7';$('pulse').className=`pulse ${features.length?'warn':'live'}`;$('topStatus').textContent=features.length?'NWS HAZARD ACTIVE â€” CHECK DETAILS':'LIVE SOURCES CONNECTED';$('fallback').className='fallback';updateHealth(true)}catch(err){$('hazardCount').textContent='?';$('hazardSummary').textContent='Direct NWS fallback required';$('coverage').textContent='3/7';$('pulse').className='pulse';$('topStatus').textContent='DEGRADED â€” DIRECT FALLBACKS READY';$('fallback').className='fallback show';$('hazards').innerHTML=`<div class="empty"><span>!</span><div><strong>Automatic NWS feed unavailable</strong><small><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener">Open NWS Spokane directly â†—</a></small></div></div>`;lastCheck=new Date();updateHealth(false)}finally{refreshing=false;$('refreshBtn').disabled=false;$('refreshBtn').textContent='â†» REFRESH';updateTimes()}}
-    function renderHazards(features){if(!features.length){$('hazards').innerHTML='<div class="empty"><span>0</span><div><strong>No active NWS hazards at this point</strong><small>This does not replace county evacuation orders.</small></div></div>';return}$('hazards').innerHTML=features.map(f=>{const p=f.properties||{},sev=(p.severity||'unknown').toLowerCase(),link=p['@id']||f.id||'https://www.weather.gov/otx/';return `<a class="hazard" href="${esc(link)}" target="_blank" rel="noopener"><span class="sev ${esc(sev)}">${esc(p.severity||'Unknown')}</span><div><strong>${esc(p.headline||p.event||'Weather alert')}</strong><small>${p.expires?'Expires '+new Date(p.expires).toLocaleString():esc(p.urgency||'Unknown')+' urgency'}</small></div><span>â†—</span></a>`}).join('')}
+    function updateHealth(nwsOk){$('health').innerHTML=healthRow('NWS active alerts',nwsOk?'Live JSON feed responding':'Automatic feed blocked-direct link ready',nwsOk?'live':'warn','https://www.weather.gov/otx/')+healthRow('Kootenai County Sheriff','Official evacuation orders-manual verification','warn','https://www.kcsheriff.com/228/Alert-Kootenai')+healthRow('Idaho Fire Map','Official IRWIN layer embedded','live','https://www.idl.idaho.gov/fire-management/idaho-fire-map/')+healthRow('Watch Duty','Human-curated incident fallback ready','live','https://app.watchduty.org/')+healthRow('Idaho 511 + ALERTWest','Corridor snapshots in-page - ALERTWest opens live console','live','https://alertwest.live/')}
+    async function refresh(){if(refreshing)return;refreshing=true;$('refreshBtn').disabled=true;$('refreshBtn').textContent='â†» SYNCING';$('topStatus').textContent='SYNCING LIVE SOURCES';$('pulse').className='pulse';try{const url=`https://api.weather.gov/alerts/active?point=${locationState.lat},${locationState.lon}`;const res=await fetch(url,{headers:{Accept:'application/geo+json'}});if(!res.ok)throw new Error(`NWS ${res.status}`);const data=await res.json();const features=Array.isArray(data.features)?data.features:[];renderHazards(features);lastCheck=new Date();$('hazardCount').textContent=features.length;$('hazardSummary').textContent=features.length?`${features.length} official active bulletin${features.length===1?'':'s'}`:'No active NWS point hazards';$('coverage').textContent='4/7';$('pulse').className=`pulse ${features.length?'warn':'live'}`;$('topStatus').textContent=features.length?'NWS HAZARD ACTIVE - CHECK DETAILS':'LIVE SOURCES CONNECTED';$('fallback').className='fallback';updateHealth(true)}catch(err){$('hazardCount').textContent='?';$('hazardSummary').textContent='Direct NWS fallback required';$('coverage').textContent='3/7';$('pulse').className='pulse';$('topStatus').textContent='DEGRADED - DIRECT FALLBACKS READY';$('fallback').className='fallback show';$('hazards').innerHTML=`<div class="empty"><span>!</span><div><strong>Automatic NWS feed unavailable</strong><small><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener">Open NWS Spokane directly â†-</a></small></div></div>`;lastCheck=new Date();updateHealth(false)}finally{refreshing=false;$('refreshBtn').disabled=false;$('refreshBtn').textContent='â†» REFRESH';updateTimes()}}
+    function renderHazards(features){if(!features.length){$('hazards').innerHTML='<div class="empty"><span>0</span><div><strong>No active NWS hazards at this point</strong><small>This does not replace county evacuation orders.</small></div></div>';return}$('hazards').innerHTML=features.map(f=>{const p=f.properties||{},sev=(p.severity||'unknown').toLowerCase(),link=p['@id']||f.id||'https://www.weather.gov/otx/';return `<a class="hazard" href="${esc(link)}" target="_blank" rel="noopener"><span class="sev ${esc(sev)}">${esc(p.severity||'Unknown')}</span><div><strong>${esc(p.headline||p.event||'Weather alert')}</strong><small>${p.expires?'Expires '+new Date(p.expires).toLocaleString():esc(p.urgency||'Unknown')+' urgency'}</small></div><span>â†-</span></a>`}).join('')}
     function updateTimes(){if(!lastCheck)return;const sec=Math.max(0,Math.floor((Date.now()-lastCheck)/1000));$('relativeTime').textContent=sec<10?'JUST NOW':sec<60?sec+'S AGO':Math.floor(sec/60)+'M AGO';$('fullTime').textContent=lastCheck.toLocaleString()}
     $('refreshBtn').onclick=refresh;$('locateBtn').onclick=()=>{if(!navigator.geolocation){$('fallbackText').textContent='Geolocation is not available in this browser.';$('fallback').className='fallback show';return}navigator.geolocation.getCurrentPosition(p=>{locationState={name:'Current location',short:'GPS',lat:+p.coords.latitude.toFixed(4),lon:+p.coords.longitude.toFixed(4)};$('locationTitle').textContent=locationState.name;renderLocations();refresh()},()=>{$('fallbackText').textContent='Location permission was declined. Saved regional locations remain active.';$('fallback').className='fallback show'})};
     renderLocations();setMap('fire');renderCameras();renderLaunch();updateHealth(false);refresh();setInterval(refresh,60000);setInterval(updateTimes,1000);setInterval(refreshSnapshots,90000);
