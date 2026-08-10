@@ -30,6 +30,27 @@
     @media(max-width:760px){.topbar{position:relative;height:auto;grid-template-columns:1fr auto}.brand{border:0}.top-state{grid-column:1/-1;grid-row:2;width:100%;min-height:34px;border-top:1px solid var(--line)}.top-actions{border:0;padding-right:14px}.auto{display:none}.shell{display:block}aside{position:relative;top:auto;height:auto;padding:15px;border:0;border-bottom:1px solid var(--line)}.locations{display:flex;overflow:auto}.location{min-width:175px}.rule,.ladder,.safety{display:none}main{padding:27px 15px 20px}.hero{align-items:start}.stamp small{display:none}.map-wrap{height:510px}.launch-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:480px){.brand-copy small{display:none}.hero{display:block}.stamp{margin-top:18px;justify-items:start}.metrics,.launch-grid,.camera-grid{grid-template-columns:1fr}.metric{min-height:103px}.map-wrap{height:480px}.map-open{left:15px;text-align:center}footer{flex-direction:column;gap:18px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}}
+    .cam-section-label{padding:11px 16px;background:#0e1216;color:#606b74;font:700 8px Consolas,monospace;letter-spacing:.12em;border-bottom:1px solid var(--line)}
+    .cam-live-row{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
+    .cam-embed{display:flex;flex-direction:column;min-width:0;background:#0b0d10}
+    .cam-embed-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--soft);background:#12161b}
+    .cam-embed-head strong{display:block;font-size:12px;font-weight:580}
+    .cam-embed-head small{display:block;margin-top:4px;color:#68747e;font-size:9px}
+    .cam-embed-head a{color:#a9b2ba;font:700 8px Consolas,monospace;letter-spacing:.06em;white-space:nowrap}
+    .cam-embed-head a:hover{color:white}
+    .cam-embed iframe{width:100%;aspect-ratio:16/9;min-height:220px;border:0;background:#000;display:block}
+    .cam-snap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
+    .cam-snap{position:relative;min-width:0;background:#101419;display:flex;flex-direction:column}
+    .cam-snap a.thumb{display:block;background:#0b0d10;border-bottom:1px solid var(--soft)}
+    .cam-snap img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#0b0d10}
+    .cam-snap-meta{padding:11px 12px;display:flex;justify-content:space-between;align-items:start;gap:8px}
+    .cam-snap-meta strong{display:block;font-size:11px;font-weight:580}
+    .cam-snap-meta small{display:block;margin-top:4px;color:#68747e;font-size:9px;line-height:1.4}
+    .cam-snap-meta span{color:#65717b;font:700 8px Consolas,monospace;letter-spacing:.06em;white-space:nowrap}
+    .camera-card.link-only .cam-live{color:var(--amber)}.camera-card.link-only .cam-live i{background:var(--amber);box-shadow:0 0 7px rgba(255,176,32,.45)}
+    @media(max-width:1080px){.cam-live-row,.cam-snap-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){.cam-live-row{grid-template-columns:1fr}.cam-snap-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.cam-snap-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -70,7 +91,7 @@
         <div class="heading"><div><div class="eyebrow">LIVE MAP SURFACE</div><h2 id="mapTitle">Idaho fires</h2></div><div class="tabs" id="mapTabs"></div></div>
         <div class="map-wrap"><iframe id="mapFrame" title="Official Idaho wildfire map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-badge"><b><i></i>LIVE EXTERNAL LAYER</b><small id="mapCaption">Official IRWIN incident layer</small></div><a class="map-open" id="mapOpen" target="_blank" rel="noopener">↗ OPEN OFFICIAL FULL MAP</a></div>
       </section>
-      <section class="panel"><div class="heading"><div><div class="eyebrow">VISUAL CONFIRMATION NETWORK</div><h2>FireWatch camera matrix</h2></div><span class="camera-note">FIRE AI → HORIZON → TRAFFIC FALLBACK</span></div><div class="camera-grid" id="cameraGrid"></div></section>
+      <section class="panel"><div class="heading"><div><div class="eyebrow">VISUAL CONFIRMATION NETWORK</div><h2>FireWatch camera matrix</h2></div><span class="camera-note">LIVE EMBEDS · 511 SNAPSHOTS · LOCKED FEEDS STAY LINK-OUT</span></div><div id="cameraGrid"></div></section>
       <div class="lower">
         <section class="panel"><div class="heading"><div><div class="eyebrow">ACTIVE BULLETINS</div><h2>NWS alert stream</h2></div><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener" class="mono" style="font-size:9px;color:#75818b">NWS SPOKANE ↗</a></div><div class="hazards" id="hazards"><div class="empty"><span>…</span><div><strong>Loading official point alerts</strong><small>NWS API is queried directly from this browser.</small></div></div></div></section>
         <section class="panel"><div class="heading"><div><div class="eyebrow">TELEMETRY HEALTH</div><h2>Source integrity</h2></div></div><div class="health" id="health"></div></section>
@@ -90,15 +111,26 @@
       {id:'zones',label:'Evacuation zones',caption:'Kootenai County Know Your Zone',src:'https://gis.kcgov.us/app/KCEarth_Evac_Zone_Pub/',href:'https://www.kcsheriff.com/317/Know-Your-Zone'},
       {id:'cameras',label:'Fire cameras',caption:'IDL statewide camera inventory and status',src:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c',href:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c'}
     ];
-    const CAMERAS=[
-      {n:'IDL Camera Network',a:'Statewide Idaho inventory, operators and status',t:'MAP',k:'map',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c'},
-      {n:'St. Joe Baldy',a:'St. Joe and southern Panhandle directional timelapse',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/11053'},
-      {n:'Gold Mountain · Sagle',a:'Sagle, Sandpoint and southern Bonner County',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9'},
-      {n:'Gold Cup · Laclede',a:'Laclede, Priest River and the US-2 corridor',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72'},
-      {n:'ALERTWest Console 8598',a:'North Panhandle live camera and incident timelapse',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/8598'},
-      {n:'Mica Peak FAA',a:'Southwest horizon and regional visibility fallback',t:'VISUAL',k:'visual',u:'https://weathercams.faa.gov/map/-117.08111%2C46.93756%2C8/rco/1507/details'},
-      {n:'CDA Lake Live',a:'Downtown lake horizon and smoke-direction context',t:'VISUAL',k:'visual',u:'https://www.cdaresort.com/live-feed/'},
-      {n:'Idaho 511 Cameras',a:'US-95, I-90 and Fourth of July Summit viewpoints',t:'VISUAL',k:'visual',u:'https://511.idaho.gov/cctv'}
+    /* AlertWest cam-console pages expose Cloudflare Stream UIDs we can iframe; Avista/FAA/CDA block cross-origin embeds. */
+    const LIVE_CAMS=[
+      {n:'St. Joe Baldy',a:'ALERTWest PTZ · southern Panhandle',t:'FIRE PTZ',u:'https://alertwest.live/cam-console/11053',embed:'https://customer-v66m2fjnes8tdcbj.cloudflarestream.com/fee10c6d2890c8ec266f75910be0a0bc/iframe?muted=true&preload=true&letterboxColor=transparent'},
+      {n:'Black Mtn Boundary',a:'ALERTWest PTZ · north Panhandle',t:'FIRE PTZ',u:'https://alertwest.live/cam-console/8598',embed:'https://customer-v66m2fjnes8tdcbj.cloudflarestream.com/cca716f49b3df22214735f66f294e0f7/iframe?muted=true&preload=true&letterboxColor=transparent'}
+    ];
+    const SNAP_CAMS=[
+      {n:'I-90 · 4th of July Summit',a:'East of CDA · ridge corridor',id:531},
+      {n:'I-90 · Cataldo',a:'Silver Valley approach',id:528},
+      {n:'I-90 · Veterans Memorial',a:'Coeur d’Alene lake crossing',id:534},
+      {n:'I-90 · Railroad Bridge',a:'Post Falls corridor',id:545},
+      {n:'US-95 · Sandpoint',a:'Bonner County north',id:574},
+      {n:'I-90 · Wallace',a:'East Panhandle corridor',id:521}
+    ];
+    const LINK_CAMS=[
+      {n:'IDL Camera Network',a:'Statewide inventory — also on Fire cameras map tab',t:'MAP',k:'map',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c',badge:'OPEN MAP'},
+      {n:'Gold Mountain · Sagle',a:'Avista WildfireWatch blocks embeds (frame-ancestors none)',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9',badge:'EXTERNAL ONLY'},
+      {n:'Gold Cup · Laclede',a:'Avista WildfireWatch blocks embeds (frame-ancestors none)',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72',badge:'EXTERNAL ONLY'},
+      {n:'Mica Peak FAA',a:'FAA WeatherCams require auth for image API',t:'VISUAL',k:'visual',u:'https://weathercams.faa.gov/map/-117.08111%2C46.93756%2C8/rco/1507/details',badge:'EXTERNAL ONLY'},
+      {n:'CDA Lake Live',a:'Verkada feed is domain-locked to cdaresort.com',t:'VISUAL',k:'visual',u:'https://www.cdaresort.com/live-feed/',badge:'EXTERNAL ONLY'},
+      {n:'Idaho 511 map',a:'Full statewide CCTV map (snapshots above refresh in-page)',t:'VISUAL',k:'visual',u:'https://511.idaho.gov/map',badge:'OPEN MAP'}
     ];
     const SOURCES=[
       {n:'ALERT! Kootenai',r:'Official evacuation action',u:'https://www.kcsheriff.com/228/Alert-Kootenai',c:'red'},
@@ -113,14 +145,30 @@
     function renderLocations(){ $('locations').innerHTML=LOCATIONS.map((x,i)=>`<button class="location ${x.name===locationState.name?'active':''}" data-i="${i}"><span>${x.short}</span><strong>${x.name}</strong><small>${x.lat.toFixed(2)} / ${Math.abs(x.lon).toFixed(2)}W</small></button>`).join('');document.querySelectorAll('.location').forEach(b=>b.onclick=()=>{locationState=LOCATIONS[+b.dataset.i];$('locationTitle').textContent=locationState.name;renderLocations();refresh()}) }
     function setMap(id){const m=MAPS.find(x=>x.id===id)||MAPS[0];$('mapTitle').textContent=m.label;$('mapCaption').textContent=m.caption;$('mapFrame').src=m.src;$('mapOpen').href=m.href;$('mapTabs').innerHTML=MAPS.map(x=>`<button class="${x.id===m.id?'active':''}" data-map="${x.id}">${x.label}</button>`).join('');document.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>setMap(b.dataset.map))}
     function renderLaunch(){ $('launchGrid').innerHTML=SOURCES.map((s,i)=>`<a class="launch ${s.c}" href="${s.u}" target="_blank" rel="noopener"><span>0${i+1}</span><div><strong>${s.n}</strong><small>${s.r}</small></div><em>↗</em></a>`).join('') }
-    function renderCameras(){ $('cameraGrid').innerHTML=CAMERAS.map(c=>`<a class="camera-card" href="${c.u}" target="_blank" rel="noopener"><div><div class="cam-top"><span class="cam-type ${c.k}">${c.t}</span><span class="cam-live"><i></i> PUBLIC FEED</span></div><h3>${c.n}</h3><p>${c.a}</p></div><div class="cam-action"><span>OPEN LIVE CAMERA</span><span>↗</span></div></a>`).join('') }
+    function snapUrl(id){return `https://511.idaho.gov/map/Cctv/${id}?t=${Date.now()}`}
+    function renderCameras(){
+      const live=LIVE_CAMS.map(c=>`<article class="cam-embed"><div class="cam-embed-head"><div><strong>${esc(c.n)}</strong><small>${esc(c.a)}</small></div><a href="${esc(c.u)}" target="_blank" rel="noopener">FULL CONSOLE ↗</a></div><iframe title="${esc(c.n)} live feed" src="${esc(c.embed)}" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></article>`).join('');
+      const snaps=SNAP_CAMS.map(c=>`<article class="cam-snap" data-cctv="${c.id}"><a class="thumb" href="https://511.idaho.gov/map" target="_blank" rel="noopener"><img src="${snapUrl(c.id)}" alt="${esc(c.n)} traffic camera" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a><div class="cam-snap-meta"><div><strong>${esc(c.n)}</strong><small>${esc(c.a)}</small></div><span>511</span></div></article>`).join('');
+      const links=LINK_CAMS.map(c=>`<a class="camera-card link-only" href="${esc(c.u)}" target="_blank" rel="noopener"><div><div class="cam-top"><span class="cam-type ${esc(c.k)}">${esc(c.t)}</span><span class="cam-live"><i></i> ${esc(c.badge||'LINK')}</span></div><h3>${esc(c.n)}</h3><p>${esc(c.a)}</p></div><div class="cam-action"><span>${esc(c.badge==='OPEN MAP'?'OPEN OFFICIAL MAP':'OPEN PROVIDER')}</span><span>↗</span></div></a>`).join('');
+      $('cameraGrid').innerHTML=`<div class="cam-section-label">ALERTWEST LIVE STREAMS · EMBEDDED</div><div class="cam-live-row">${live}</div><div class="cam-section-label">IDAHO 511 CORRIDOR SNAPSHOTS · AUTO-REFRESH ~90S</div><div class="cam-snap-grid">${snaps}</div><div class="cam-section-label">PROVIDER LOCKED OR HEAVY GIS · OPEN IN NEW TAB</div><div class="camera-grid">${links}</div>`;
+    }
+    function refreshSnapshots(){
+      document.querySelectorAll('.cam-snap[data-cctv]').forEach(card=>{
+        const id=card.dataset.cctv,img=card.querySelector('img');
+        if(!img)return;
+        const next=new Image();
+        next.decoding='async';
+        next.onload=()=>{img.src=next.src};
+        next.src=snapUrl(id);
+      });
+    }
     function healthRow(name,detail,state,url){return `<a class="source ${state}" href="${url}" target="_blank" rel="noopener"><i></i><div><strong>${name}</strong><small>${detail}</small></div><time>${lastCheck?'NOW':'READY'}</time></a>`}
-    function updateHealth(nwsOk){$('health').innerHTML=healthRow('NWS active alerts',nwsOk?'Live JSON feed responding':'Automatic feed blocked—direct link ready',nwsOk?'live':'warn','https://www.weather.gov/otx/')+healthRow('Kootenai County Sheriff','Official evacuation orders—manual verification','warn','https://www.kcsheriff.com/228/Alert-Kootenai')+healthRow('Idaho Fire Map','Official IRWIN layer embedded','live','https://www.idl.idaho.gov/fire-management/idaho-fire-map/')+healthRow('Watch Duty','Human-curated incident fallback ready','live','https://app.watchduty.org/')+healthRow('ALERTWest cameras','Visual verification fallback ready','live','https://alertwest.live/')}
+    function updateHealth(nwsOk){$('health').innerHTML=healthRow('NWS active alerts',nwsOk?'Live JSON feed responding':'Automatic feed blocked—direct link ready',nwsOk?'live':'warn','https://www.weather.gov/otx/')+healthRow('Kootenai County Sheriff','Official evacuation orders—manual verification','warn','https://www.kcsheriff.com/228/Alert-Kootenai')+healthRow('Idaho Fire Map','Official IRWIN layer embedded','live','https://www.idl.idaho.gov/fire-management/idaho-fire-map/')+healthRow('Watch Duty','Human-curated incident fallback ready','live','https://app.watchduty.org/')+healthRow('ALERTWest + Idaho 511','Live streams embedded · corridor snapshots refresh in-page','live','https://alertwest.live/')}
     async function refresh(){if(refreshing)return;refreshing=true;$('refreshBtn').disabled=true;$('refreshBtn').textContent='↻ SYNCING';$('topStatus').textContent='SYNCING LIVE SOURCES';$('pulse').className='pulse';try{const url=`https://api.weather.gov/alerts/active?point=${locationState.lat},${locationState.lon}`;const res=await fetch(url,{headers:{Accept:'application/geo+json'}});if(!res.ok)throw new Error(`NWS ${res.status}`);const data=await res.json();const features=Array.isArray(data.features)?data.features:[];renderHazards(features);lastCheck=new Date();$('hazardCount').textContent=features.length;$('hazardSummary').textContent=features.length?`${features.length} official active bulletin${features.length===1?'':'s'}`:'No active NWS point hazards';$('coverage').textContent='4/7';$('pulse').className=`pulse ${features.length?'warn':'live'}`;$('topStatus').textContent=features.length?'NWS HAZARD ACTIVE — CHECK DETAILS':'LIVE SOURCES CONNECTED';$('fallback').className='fallback';updateHealth(true)}catch(err){$('hazardCount').textContent='?';$('hazardSummary').textContent='Direct NWS fallback required';$('coverage').textContent='3/7';$('pulse').className='pulse';$('topStatus').textContent='DEGRADED — DIRECT FALLBACKS READY';$('fallback').className='fallback show';$('hazards').innerHTML=`<div class="empty"><span>!</span><div><strong>Automatic NWS feed unavailable</strong><small><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener">Open NWS Spokane directly ↗</a></small></div></div>`;lastCheck=new Date();updateHealth(false)}finally{refreshing=false;$('refreshBtn').disabled=false;$('refreshBtn').textContent='↻ REFRESH';updateTimes()}}
     function renderHazards(features){if(!features.length){$('hazards').innerHTML='<div class="empty"><span>0</span><div><strong>No active NWS hazards at this point</strong><small>This does not replace county evacuation orders.</small></div></div>';return}$('hazards').innerHTML=features.map(f=>{const p=f.properties||{},sev=(p.severity||'unknown').toLowerCase(),link=p['@id']||f.id||'https://www.weather.gov/otx/';return `<a class="hazard" href="${esc(link)}" target="_blank" rel="noopener"><span class="sev ${esc(sev)}">${esc(p.severity||'Unknown')}</span><div><strong>${esc(p.headline||p.event||'Weather alert')}</strong><small>${p.expires?'Expires '+new Date(p.expires).toLocaleString():esc(p.urgency||'Unknown')+' urgency'}</small></div><span>↗</span></a>`}).join('')}
     function updateTimes(){if(!lastCheck)return;const sec=Math.max(0,Math.floor((Date.now()-lastCheck)/1000));$('relativeTime').textContent=sec<10?'JUST NOW':sec<60?sec+'S AGO':Math.floor(sec/60)+'M AGO';$('fullTime').textContent=lastCheck.toLocaleString()}
     $('refreshBtn').onclick=refresh;$('locateBtn').onclick=()=>{if(!navigator.geolocation){$('fallbackText').textContent='Geolocation is not available in this browser.';$('fallback').className='fallback show';return}navigator.geolocation.getCurrentPosition(p=>{locationState={name:'Current location',short:'GPS',lat:+p.coords.latitude.toFixed(4),lon:+p.coords.longitude.toFixed(4)};$('locationTitle').textContent=locationState.name;renderLocations();refresh()},()=>{$('fallbackText').textContent='Location permission was declined. Saved regional locations remain active.';$('fallback').className='fallback show'})};
-    renderLocations();setMap('fire');renderCameras();renderLaunch();updateHealth(false);refresh();setInterval(refresh,60000);setInterval(updateTimes,1000);
+    renderLocations();setMap('fire');renderCameras();renderLaunch();updateHealth(false);refresh();setInterval(refresh,60000);setInterval(updateTimes,1000);setInterval(refreshSnapshots,90000);
   </script>
 </body>
 </html>
