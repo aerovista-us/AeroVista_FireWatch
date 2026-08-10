@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090b0e">
+  <meta name="description" content="AeroVista multi-source wildfire awareness dashboard for North Idaho.">
+  <title>AeroVista FireWatch Command</title>
+  <link rel="icon" href="./aerovista-firewatch-favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="./aerovista-firewatch-favicon.png" type="image/png" sizes="64x64">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="AeroVista FireWatch Command">
+  <meta property="og:description" content="Real-time multi-source wildfire awareness for North Idaho.">
+  <meta property="og:image" content="./aerovista-firewatch-social.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AeroVista FireWatch Command">
+  <meta name="twitter:description" content="Real-time multi-source wildfire awareness for North Idaho.">
+  <meta name="twitter:image" content="./aerovista-firewatch-social.png">
+  <!-- AV:INJECT:BEGIN id="umami-analytics" -->
+  <script>
+    (() => {
+      const config = Object.freeze({
+        host: 'https://stats.aerocoreos.com',
+        websiteId: 'REPLACE_WITH_UMAMI_WEBSITE_ID'
+      });
+      const validWebsiteId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(config.websiteId);
+      if (!validWebsiteId) return;
+
+      const tracker = document.createElement('script');
+      tracker.defer = true;
+      tracker.src = `${config.host}/script.js`;
+      tracker.dataset.websiteId = config.websiteId;
+      document.head.appendChild(tracker);
+
+      const clean = value => String(value || '').replace(/\s+/g, ' ').trim().slice(0, 100);
+      const send = (eventName, data) => {
+        if (window.umami && typeof window.umami.track === 'function') window.umami.track(eventName, data);
+      };
+
+      document.addEventListener('click', event => {
+        const control = event.target.closest('a,button');
+        if (!control) return;
+
+        if (control.id === 'refreshBtn') return send('firewatch_refresh', { location: clean(document.getElementById('locationTitle')?.textContent) });
+        if (control.id === 'locateBtn') return send('firewatch_geolocate');
+        if (control.id === 'mapOpen') return send('firewatch_map_open', { map: clean(document.getElementById('mapTitle')?.textContent) });
+
+        const location = control.closest('.location');
+        if (location) return send('firewatch_location', { location: clean(location.querySelector('strong')?.textContent) });
+
+        const mapTab = control.closest('[data-map]');
+        if (mapTab) return send('firewatch_map_tab', { map: clean(mapTab.textContent) });
+
+        const camera = control.closest('.camera-card');
+        if (camera) return send('firewatch_camera_open', { camera: clean(camera.querySelector('h3')?.textContent) });
+
+        const source = control.closest('.launch');
+        if (source) return send('firewatch_source_open', { source: clean(source.querySelector('strong')?.textContent) });
+
+        const health = control.closest('.source');
+        if (health) return send('firewatch_health_open', { source: clean(health.querySelector('strong')?.textContent) });
+
+        const alert = control.closest('.hazard');
+        if (alert) return send('firewatch_alert_open', { alert: clean(alert.querySelector('strong')?.textContent) });
+
+        if (control.href && control.href.includes('weather.gov')) send('firewatch_nws_open');
+      }, { passive: true });
+    })();
+  </script>
+  <!-- AV:INJECT:END id="umami-analytics" -->
+  <style>
+    :root{--bg:#080a0d;--panel:#101419;--panel2:#151a20;--line:#293039;--soft:#1d232a;--text:#f1f3f5;--muted:#89949f;--dim:#59646e;--red:#ff4b3e;--amber:#ffb020;--blue:#4aa8ff;--green:#35d394;--violet:#a87cff;--teal:#37c7c4;font-family:Inter,Segoe UI,Arial,sans-serif;color-scheme:dark}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--bg)}body{margin:0;min-width:320px;color:var(--text);background:radial-gradient(circle at 78% -10%,rgba(255,75,62,.08),transparent 27rem),linear-gradient(180deg,#0b0e11,var(--bg) 33rem)}button,a{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}.mono{font-family:Consolas,ui-monospace,monospace}.eyebrow{color:#75808b;font:700 9px/1.2 Consolas,monospace;letter-spacing:.18em}.topbar{position:sticky;top:0;z-index:20;height:72px;display:grid;grid-template-columns:300px 1fr 300px;align-items:center;border-bottom:1px solid var(--line);background:rgba(8,10,13,.94);backdrop-filter:blur(18px)}
+    .brand{height:72px;display:flex;align-items:center;gap:13px;padding:0 24px;border-right:1px solid var(--line)}.mark{position:relative;width:40px;height:36px;border:1px solid #64707a;transform:skewX(-14deg)}.mark:after{content:"";position:absolute;right:-4px;top:-2px;width:3px;height:38px;background:var(--red);box-shadow:0 0 16px rgba(255,75,62,.7)}.mark b{position:absolute;left:8px;top:8px;font:800 18px/1 Consolas,monospace;transform:skewX(14deg)}.mark i{position:absolute;right:8px;bottom:7px;color:#7a858f;font:800 15px/1 Consolas,monospace;font-style:normal;transform:skewX(14deg)}.brand-copy{display:flex;flex-direction:column}.brand-copy strong{font-size:14px;letter-spacing:.22em}.brand-copy small{color:var(--muted);font:700 9px/1.8 Consolas,monospace;letter-spacing:.13em}.top-state{justify-self:center;display:flex;align-items:center;gap:10px;color:#b8c0c7;font:700 10px/1 Consolas,monospace;letter-spacing:.12em}.pulse{width:8px;height:8px;border-radius:50%;background:var(--dim);box-shadow:0 0 0 4px rgba(89,100,110,.14)}.pulse.live{background:var(--green);box-shadow:0 0 0 4px rgba(53,211,148,.12),0 0 15px rgba(53,211,148,.45)}.pulse.warn{background:var(--red);box-shadow:0 0 0 4px rgba(255,75,62,.12),0 0 15px rgba(255,75,62,.5);animation:pulse 1.5s infinite}@keyframes pulse{50%{opacity:.4}}.top-actions{height:72px;display:flex;justify-content:flex-end;align-items:center;gap:14px;padding:0 22px;border-left:1px solid var(--line)}.auto{color:var(--muted);font:700 9px/1 Consolas,monospace;letter-spacing:.1em}.top-actions button,.locate{border:1px solid #343c45;color:#c8cdd1;background:#12161b;border-radius:5px;padding:9px 12px}.top-actions button:hover,.locate:hover{border-color:#69747e;color:white}
+    .shell{display:grid;grid-template-columns:300px minmax(0,1fr);min-height:calc(100vh - 72px)}aside{position:sticky;top:72px;align-self:start;height:calc(100vh - 72px);padding:28px 24px;border-right:1px solid var(--line);background:rgba(11,14,17,.74);overflow:auto}.locations{display:grid;gap:8px;margin:15px 0 12px}.location{display:grid;grid-template-columns:43px 1fr;gap:3px 10px;text-align:left;color:var(--muted);background:transparent;border:1px solid var(--soft);border-radius:5px;padding:12px;transition:.2s}.location>span{grid-row:1/span 2;align-self:center;color:#75808b;font:700 10px Consolas,monospace}.location strong{color:#bdc5cb;font-size:12px}.location small{color:var(--dim);font:600 9px Consolas,monospace}.location:hover{background:#12161b}.location.active{background:linear-gradient(90deg,rgba(255,75,62,.1),transparent);border-color:rgba(255,75,62,.5);box-shadow:inset 2px 0 var(--red)}.locate{width:100%;font-size:11px}.rule{height:1px;background:var(--line);margin:28px 0}.ladder{list-style:none;padding:0;margin:15px 0}.ladder li{display:grid;grid-template-columns:24px 1fr;gap:3px 8px;padding:11px 0;border-bottom:1px solid var(--soft)}.ladder b{grid-row:1/span 2;display:grid;place-items:center;width:20px;height:20px;border:1px solid #3b444d;border-radius:50%;color:#7b8791;font:700 9px Consolas,monospace}.ladder span{color:#c3c9ce;font-size:11px}.ladder small{color:#5f6b75;font-size:9px}.safety{margin-top:28px;padding:14px;border:1px solid #2b333a;background:#0e1216;color:#78838c;font-size:9px;line-height:1.55}.safety strong{display:block;color:#c7cdd2;margin-bottom:3px}
+    main{padding:42px clamp(24px,4vw,58px) 28px;overflow:hidden}.hero{display:flex;justify-content:space-between;align-items:end;gap:32px;margin-bottom:28px}.hero h1{margin:10px 0 5px;font-size:clamp(34px,4vw,54px);font-weight:550;letter-spacing:-.045em}.hero p{margin:0;color:var(--muted);font-size:14px}.stamp{display:grid;justify-items:end;gap:4px}.stamp span{color:var(--dim);font:700 9px Consolas,monospace;letter-spacing:.14em}.stamp strong{font:500 16px Consolas,monospace}.stamp small{color:#68737d;font:600 9px Consolas,monospace}.fallback{display:none;grid-template-columns:auto 1fr;gap:14px;margin-bottom:14px;padding:12px 15px;border:1px solid rgba(255,176,32,.35);background:rgba(255,176,32,.07);color:#d9bd86;font-size:11px}.fallback.show{display:grid}.fallback b{color:var(--amber);font:700 10px Consolas,monospace}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--line);background:var(--line)}.metric{min-width:0;min-height:124px;display:flex;flex-direction:column;justify-content:space-between;padding:20px;background:linear-gradient(145deg,#14181d,#0f1216)}.metric label{color:#68747f;font:700 9px Consolas,monospace;letter-spacing:.14em}.metric strong{font:520 29px/1 Consolas,monospace;letter-spacing:-.06em}.metric small{color:#69747d;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.metric.alert strong{color:var(--amber)}.metric.alert.clear strong{color:var(--green)}.metric.alert.warn strong{color:var(--red)}.metric.coverage strong{color:var(--blue)}
+    .panel{margin-top:18px;border:1px solid var(--line);background:rgba(15,19,23,.88)}.heading{min-height:78px;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:17px 20px;border-bottom:1px solid var(--line)}.heading h2{margin:7px 0 0;font-size:17px;font-weight:560}.tabs{display:flex;gap:3px;padding:3px;border:1px solid var(--line);background:#0b0e11}.tabs button{padding:8px 12px;color:#72808a;border:0;background:transparent;font-size:10px}.tabs button.active{color:white;background:#222830;box-shadow:inset 0 -1px var(--red)}.map-wrap{position:relative;height:min(58vw,600px);min-height:430px;background:#0b0d10;overflow:hidden}.map-wrap iframe{width:100%;height:100%;border:0;filter:saturate(.8) contrast(1.04) brightness(.9)}.map-badge{position:absolute;left:15px;top:15px;display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px solid rgba(255,255,255,.15);background:rgba(8,11,14,.88);backdrop-filter:blur(10px)}.map-badge b{font:700 9px Consolas,monospace;letter-spacing:.09em}.map-badge small{color:#6c7881;font-size:9px}.map-badge i{display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}.map-open{position:absolute;right:15px;bottom:15px;padding:10px 13px;border:1px solid rgba(255,255,255,.18);background:rgba(8,11,14,.91);font-size:10px}.map-open:hover{border-color:var(--red)}
+    .lower{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:18px}.hazards,.health{min-height:190px}.empty{min-height:190px;display:flex;align-items:center;justify-content:center;gap:15px;color:#68747d}.empty>span{color:var(--green);font:500 38px Consolas,monospace}.empty strong{display:block;color:#c2c9ce;font-size:12px}.empty small{font-size:9px}.hazard{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;min-height:66px;padding:12px 17px;border-bottom:1px solid var(--soft)}.hazard:hover,.source:hover{background:#161b21}.sev{min-width:64px;padding:6px 7px;text-align:center;border:1px solid;color:var(--blue);font:700 8px Consolas,monospace;text-transform:uppercase}.sev.severe,.sev.extreme{color:var(--red)}.sev.moderate{color:var(--amber)}.hazard strong,.source strong{display:block;color:#cbd1d5;font-size:10px}.hazard small,.source small{display:block;margin-top:5px;color:#66717b;font-size:9px}.source{display:grid;grid-template-columns:8px 1fr auto;align-items:center;gap:11px;min-height:52px;padding:8px 15px;border-bottom:1px solid var(--soft)}.source i{width:7px;height:7px;border-radius:50%;background:#6f7a84}.source.live i{background:var(--green);box-shadow:0 0 7px rgba(53,211,148,.55)}.source.warn i{background:var(--amber)}.source time{color:#56616b;font:600 8px Consolas,monospace}.camera-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}.camera-card{position:relative;min-height:148px;display:flex;flex-direction:column;justify-content:space-between;padding:17px;background:linear-gradient(145deg,#151a20,#101419);transition:.2s;overflow:hidden}.camera-card:before{content:"";position:absolute;inset:auto -30px -70px auto;width:150px;height:150px;border:1px solid rgba(255,255,255,.045);border-radius:50%;box-shadow:0 0 0 24px rgba(255,255,255,.018),0 0 0 48px rgba(255,255,255,.012)}.camera-card:hover{background:#1a2027}.cam-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.cam-type{padding:5px 7px;border:1px solid rgba(53,211,148,.35);color:var(--green);font:700 8px Consolas,monospace;letter-spacing:.08em}.cam-type.visual{color:var(--blue);border-color:rgba(74,168,255,.35)}.cam-type.map{color:var(--amber);border-color:rgba(255,176,32,.35)}.cam-live{display:flex;align-items:center;gap:5px;color:#65717b;font:700 8px Consolas,monospace}.cam-live i{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 7px rgba(53,211,148,.55)}.camera-card h3{margin:17px 0 4px;font-size:13px;font-weight:580}.camera-card p{margin:0;color:#68747e;font-size:9px;line-height:1.45}.cam-action{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;margin-top:18px;color:#a9b2ba;font:700 9px Consolas,monospace;letter-spacing:.06em}.camera-note{color:#606b74;font:600 8px Consolas,monospace;letter-spacing:.05em}.launch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}.launch{position:relative;min-height:96px;display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:12px;padding:16px;background:#11151a;transition:.2s}.launch:before{content:"";position:absolute;inset:0 auto 0 0;width:2px;background:var(--accent)}.launch:hover{background:#1a1f26;transform:translateY(-1px)}.launch>span{color:var(--accent);font:700 10px Consolas,monospace}.launch strong{font-size:11px}.launch small{display:block;margin-top:5px;color:#65717a;font-size:9px}.launch em{color:#535e68;font-style:normal}.red{--accent:var(--red)}.amber{--accent:var(--amber)}.blue{--accent:var(--blue)}.violet{--accent:var(--violet)}.teal{--accent:var(--teal)}.gray{--accent:#89949f}footer{min-height:92px;margin-top:28px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:#5d6872;font-size:9px}footer strong{display:block;margin-bottom:5px;color:#7b8690;font:700 9px Consolas,monospace;letter-spacing:.1em}.loading{opacity:.55}
+    @media(max-width:1080px){.topbar{grid-template-columns:250px 1fr 230px}.shell{grid-template-columns:250px minmax(0,1fr)}.metrics{grid-template-columns:1fr 1fr}.lower{grid-template-columns:1fr}.camera-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){.topbar{position:relative;height:auto;grid-template-columns:1fr auto}.brand{border:0}.top-state{grid-column:1/-1;grid-row:2;width:100%;min-height:34px;border-top:1px solid var(--line)}.top-actions{border:0;padding-right:14px}.auto{display:none}.shell{display:block}aside{position:relative;top:auto;height:auto;padding:15px;border:0;border-bottom:1px solid var(--line)}.locations{display:flex;overflow:auto}.location{min-width:175px}.rule,.ladder,.safety{display:none}main{padding:27px 15px 20px}.hero{align-items:start}.stamp small{display:none}.map-wrap{height:510px}.launch-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.brand-copy small{display:none}.hero{display:block}.stamp{margin-top:18px;justify-items:start}.metrics,.launch-grid,.camera-grid{grid-template-columns:1fr}.metric{min-height:103px}.map-wrap{height:480px}.map-open{left:15px;text-align:center}footer{flex-direction:column;gap:18px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top"><span class="mark"><b>A</b><i>V</i></span><span class="brand-copy"><strong>AEROVISTA</strong><small>FIREWATCH COMMAND</small></span></a>
+    <div class="top-state"><span id="pulse" class="pulse"></span><span id="topStatus">CONNECTING LIVE SOURCES</span></div>
+    <div class="top-actions"><span class="auto">AUTO REFRESH 60S</span><button id="refreshBtn" title="Refresh sources">↻ REFRESH</button></div>
+  </header>
+  <div class="shell" id="top">
+    <aside>
+      <div class="eyebrow">MONITORED LOCATIONS</div>
+      <div class="locations" id="locations"></div>
+      <button class="locate" id="locateBtn">⌖ USE MY LOCATION</button>
+      <div class="rule"></div>
+      <div class="eyebrow">FAILOVER LADDER</div>
+      <ol class="ladder">
+        <li><b>1</b><span>County evacuation order</span><small>Act immediately</small></li>
+        <li><b>2</b><span>Official incident report</span><small>Confirm and prepare</small></li>
+        <li><b>3</b><span>Dispatch call</span><small>Investigate signal</small></li>
+        <li><b>4</b><span>Camera or satellite</span><small>Visual context</small></li>
+        <li><b>5</b><span>Smoke sensor</span><small>Supporting evidence</small></li>
+      </ol>
+      <div class="safety"><strong>Official orders outrank every map.</strong>If you see fire or immediate danger, call 911. This page is an awareness tool, not emergency dispatch.</div>
+    </aside>
+    <main>
+      <section class="hero">
+        <div><div class="eyebrow">REGIONAL OPERATIONS PICTURE</div><h1 id="locationTitle">Coeur d’Alene</h1><p>One view. Multiple independent signals. Explicit fallbacks.</p></div>
+        <div class="stamp"><span>LAST LIVE CHECK</span><strong id="relativeTime">NOT YET</strong><small id="fullTime">Waiting for live sources</small></div>
+      </section>
+      <div class="fallback" id="fallback"><b>FALLBACK MODE</b><span id="fallbackText">One or more feeds could not be read automatically. Direct official links remain available.</span></div>
+      <section class="metrics">
+        <article class="metric alert" id="countyMetric"><label>COUNTY EVACUATION</label><strong>LINK-ONLY</strong><small>Open sheriff source for binding orders</small></article>
+        <article class="metric"><label>NWS ACTIVE HAZARDS</label><strong id="hazardCount">—</strong><small id="hazardSummary">Official point-alert feed</small></article>
+        <article class="metric"><label>LOCAL FIRE DANGER</label><strong style="font-size:23px">VERIFY LIVE</strong><small>City and IDL direct sources below</small></article>
+        <article class="metric coverage"><label>SOURCE PATHS</label><strong id="coverage">1/7</strong><small>Automatic live feeds / total paths</small></article>
+      </section>
+      <section class="panel">
+        <div class="heading"><div><div class="eyebrow">LIVE MAP SURFACE</div><h2 id="mapTitle">Idaho fires</h2></div><div class="tabs" id="mapTabs"></div></div>
+        <div class="map-wrap"><iframe id="mapFrame" title="Official Idaho wildfire map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-badge"><b><i></i>LIVE EXTERNAL LAYER</b><small id="mapCaption">Official IRWIN incident layer</small></div><a class="map-open" id="mapOpen" target="_blank" rel="noopener">↗ OPEN OFFICIAL FULL MAP</a></div>
+      </section>
+      <section class="panel"><div class="heading"><div><div class="eyebrow">VISUAL CONFIRMATION NETWORK</div><h2>FireWatch camera matrix</h2></div><span class="camera-note">FIRE AI → HORIZON → TRAFFIC FALLBACK</span></div><div class="camera-grid" id="cameraGrid"></div></section>
+      <div class="lower">
+        <section class="panel"><div class="heading"><div><div class="eyebrow">ACTIVE BULLETINS</div><h2>NWS alert stream</h2></div><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener" class="mono" style="font-size:9px;color:#75818b">NWS SPOKANE ↗</a></div><div class="hazards" id="hazards"><div class="empty"><span>…</span><div><strong>Loading official point alerts</strong><small>NWS API is queried directly from this browser.</small></div></div></div></section>
+        <section class="panel"><div class="heading"><div><div class="eyebrow">TELEMETRY HEALTH</div><h2>Source integrity</h2></div></div><div class="health" id="health"></div></section>
+      </div>
+      <section class="panel"><div class="heading"><div><div class="eyebrow">DIRECT INTELLIGENCE</div><h2>Fallback launch deck</h2></div><span class="mono" style="font-size:8px;color:#5e6972">ALWAYS AVAILABLE</span></div><div class="launch-grid" id="launchGrid"></div></section>
+      <footer><div><strong>AV // FIREWATCH COMMAND</strong>Operational awareness—not an emergency dispatch system.</div><div style="text-align:right"><strong>DATA PRIORITY</strong>SHERIFF → IDL / USFS → NWS → FIELD SIGNALS</div></footer>
+    </main>
+  </div>
+  <script>
+    const LOCATIONS=[
+      {name:'Coeur d’Alene',short:'CDA',lat:47.6777,lon:-116.7805},
+      {name:'Spirit Lake',short:'83869',lat:47.9663,lon:-116.8685},
+      {name:'Priest River',short:'83856',lat:48.1802,lon:-116.9110}
+    ];
+    const MAPS=[
+      {id:'fire',label:'Idaho fires',caption:'Official IRWIN incident layer',src:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?extent=-13250000%2C5850000%2C-12600000%2C6250000%2C102100&id=49bc88dc5e144ae2b3cd60a726168377',href:'https://www.idl.idaho.gov/fire-management/idaho-fire-map/'},
+      {id:'zones',label:'Evacuation zones',caption:'Kootenai County Know Your Zone',src:'https://gis.kcgov.us/app/KCEarth_Evac_Zone_Pub/',href:'https://www.kcsheriff.com/317/Know-Your-Zone'},
+      {id:'cameras',label:'Fire cameras',caption:'IDL statewide camera inventory and status',src:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c',href:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c'}
+    ];
+    const CAMERAS=[
+      {n:'IDL Camera Network',a:'Statewide Idaho inventory, operators and status',t:'MAP',k:'map',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c'},
+      {n:'St. Joe Baldy',a:'St. Joe and southern Panhandle directional timelapse',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/11053'},
+      {n:'Gold Mountain · Sagle',a:'Sagle, Sandpoint and southern Bonner County',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9'},
+      {n:'Gold Cup · Laclede',a:'Laclede, Priest River and the US-2 corridor',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72'},
+      {n:'ALERTWest Console 8598',a:'North Panhandle live camera and incident timelapse',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/8598'},
+      {n:'Mica Peak FAA',a:'Southwest horizon and regional visibility fallback',t:'VISUAL',k:'visual',u:'https://weathercams.faa.gov/map/-117.08111%2C46.93756%2C8/rco/1507/details'},
+      {n:'CDA Lake Live',a:'Downtown lake horizon and smoke-direction context',t:'VISUAL',k:'visual',u:'https://www.cdaresort.com/live-feed/'},
+      {n:'Idaho 511 Cameras',a:'US-95, I-90 and Fourth of July Summit viewpoints',t:'VISUAL',k:'visual',u:'https://511.idaho.gov/cctv'}
+    ];
+    const SOURCES=[
+      {n:'ALERT! Kootenai',r:'Official evacuation action',u:'https://www.kcsheriff.com/228/Alert-Kootenai',c:'red'},
+      {n:'Watch Duty',r:'Fast incident intelligence',u:'https://app.watchduty.org/',c:'amber'},
+      {n:'PulsePoint',r:'Local dispatch signal',u:'https://web.pulsepoint.org/',c:'blue'},
+      {n:'ALERTWest',r:'Live camera verification',u:'https://alertwest.live/',c:'violet'},
+      {n:'AirNow Fire + Smoke',r:'Smoke and PM2.5 context',u:'https://fire.airnow.gov/',c:'teal'},
+      {n:'IDL Restrictions',r:'Legal fire-use status',u:'https://www.idl.idaho.gov/fire-management/fire-restrictions-finder/',c:'gray'}
+    ];
+    const $=id=>document.getElementById(id);let locationState=LOCATIONS[0],lastCheck=null,refreshing=false;
+    function esc(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+    function renderLocations(){ $('locations').innerHTML=LOCATIONS.map((x,i)=>`<button class="location ${x.name===locationState.name?'active':''}" data-i="${i}"><span>${x.short}</span><strong>${x.name}</strong><small>${x.lat.toFixed(2)} / ${Math.abs(x.lon).toFixed(2)}W</small></button>`).join('');document.querySelectorAll('.location').forEach(b=>b.onclick=()=>{locationState=LOCATIONS[+b.dataset.i];$('locationTitle').textContent=locationState.name;renderLocations();refresh()}) }
+    function setMap(id){const m=MAPS.find(x=>x.id===id)||MAPS[0];$('mapTitle').textContent=m.label;$('mapCaption').textContent=m.caption;$('mapFrame').src=m.src;$('mapOpen').href=m.href;$('mapTabs').innerHTML=MAPS.map(x=>`<button class="${x.id===m.id?'active':''}" data-map="${x.id}">${x.label}</button>`).join('');document.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>setMap(b.dataset.map))}
+    function renderLaunch(){ $('launchGrid').innerHTML=SOURCES.map((s,i)=>`<a class="launch ${s.c}" href="${s.u}" target="_blank" rel="noopener"><span>0${i+1}</span><div><strong>${s.n}</strong><small>${s.r}</small></div><em>↗</em></a>`).join('') }
+    function renderCameras(){ $('cameraGrid').innerHTML=CAMERAS.map(c=>`<a class="camera-card" href="${c.u}" target="_blank" rel="noopener"><div><div class="cam-top"><span class="cam-type ${c.k}">${c.t}</span><span class="cam-live"><i></i> PUBLIC FEED</span></div><h3>${c.n}</h3><p>${c.a}</p></div><div class="cam-action"><span>OPEN LIVE CAMERA</span><span>↗</span></div></a>`).join('') }
+    function healthRow(name,detail,state,url){return `<a class="source ${state}" href="${url}" target="_blank" rel="noopener"><i></i><div><strong>${name}</strong><small>${detail}</small></div><time>${lastCheck?'NOW':'READY'}</time></a>`}
+    function updateHealth(nwsOk){$('health').innerHTML=healthRow('NWS active alerts',nwsOk?'Live JSON feed responding':'Automatic feed blocked—direct link ready',nwsOk?'live':'warn','https://www.weather.gov/otx/')+healthRow('Kootenai County Sheriff','Official evacuation orders—manual verification','warn','https://www.kcsheriff.com/228/Alert-Kootenai')+healthRow('Idaho Fire Map','Official IRWIN layer embedded','live','https://www.idl.idaho.gov/fire-management/idaho-fire-map/')+healthRow('Watch Duty','Human-curated incident fallback ready','live','https://app.watchduty.org/')+healthRow('ALERTWest cameras','Visual verification fallback ready','live','https://alertwest.live/')}
+    async function refresh(){if(refreshing)return;refreshing=true;$('refreshBtn').disabled=true;$('refreshBtn').textContent='↻ SYNCING';$('topStatus').textContent='SYNCING LIVE SOURCES';$('pulse').className='pulse';try{const url=`https://api.weather.gov/alerts/active?point=${locationState.lat},${locationState.lon}`;const res=await fetch(url,{headers:{Accept:'application/geo+json'}});if(!res.ok)throw new Error(`NWS ${res.status}`);const data=await res.json();const features=Array.isArray(data.features)?data.features:[];renderHazards(features);lastCheck=new Date();$('hazardCount').textContent=features.length;$('hazardSummary').textContent=features.length?`${features.length} official active bulletin${features.length===1?'':'s'}`:'No active NWS point hazards';$('coverage').textContent='4/7';$('pulse').className=`pulse ${features.length?'warn':'live'}`;$('topStatus').textContent=features.length?'NWS HAZARD ACTIVE — CHECK DETAILS':'LIVE SOURCES CONNECTED';$('fallback').className='fallback';updateHealth(true)}catch(err){$('hazardCount').textContent='?';$('hazardSummary').textContent='Direct NWS fallback required';$('coverage').textContent='3/7';$('pulse').className='pulse';$('topStatus').textContent='DEGRADED — DIRECT FALLBACKS READY';$('fallback').className='fallback show';$('hazards').innerHTML=`<div class="empty"><span>!</span><div><strong>Automatic NWS feed unavailable</strong><small><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener">Open NWS Spokane directly ↗</a></small></div></div>`;lastCheck=new Date();updateHealth(false)}finally{refreshing=false;$('refreshBtn').disabled=false;$('refreshBtn').textContent='↻ REFRESH';updateTimes()}}
+    function renderHazards(features){if(!features.length){$('hazards').innerHTML='<div class="empty"><span>0</span><div><strong>No active NWS hazards at this point</strong><small>This does not replace county evacuation orders.</small></div></div>';return}$('hazards').innerHTML=features.map(f=>{const p=f.properties||{},sev=(p.severity||'unknown').toLowerCase(),link=p['@id']||f.id||'https://www.weather.gov/otx/';return `<a class="hazard" href="${esc(link)}" target="_blank" rel="noopener"><span class="sev ${esc(sev)}">${esc(p.severity||'Unknown')}</span><div><strong>${esc(p.headline||p.event||'Weather alert')}</strong><small>${p.expires?'Expires '+new Date(p.expires).toLocaleString():esc(p.urgency||'Unknown')+' urgency'}</small></div><span>↗</span></a>`}).join('')}
+    function updateTimes(){if(!lastCheck)return;const sec=Math.max(0,Math.floor((Date.now()-lastCheck)/1000));$('relativeTime').textContent=sec<10?'JUST NOW':sec<60?sec+'S AGO':Math.floor(sec/60)+'M AGO';$('fullTime').textContent=lastCheck.toLocaleString()}
+    $('refreshBtn').onclick=refresh;$('locateBtn').onclick=()=>{if(!navigator.geolocation){$('fallbackText').textContent='Geolocation is not available in this browser.';$('fallback').className='fallback show';return}navigator.geolocation.getCurrentPosition(p=>{locationState={name:'Current location',short:'GPS',lat:+p.coords.latitude.toFixed(4),lon:+p.coords.longitude.toFixed(4)};$('locationTitle').textContent=locationState.name;renderLocations();refresh()},()=>{$('fallbackText').textContent='Location permission was declined. Saved regional locations remain active.';$('fallback').className='fallback show'})};
+    renderLocations();setMap('fire');renderCameras();renderLaunch();updateHealth(false);refresh();setInterval(refresh,60000);setInterval(updateTimes,1000);
+  </script>
+</body>
+</html>
