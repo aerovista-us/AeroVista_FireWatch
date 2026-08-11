@@ -13,7 +13,33 @@ Public feed cards open provider pages in a new tab:
 | **St. Joe Baldy / Black Mountain** | ALERTWest `cam-console/{id}` | Public live PTZ |
 | **FAA / CDA lake / 511** | Provider pages | Embed limits documented below |
 
-Avista/Pano AI stations are enterprise-gated; FireWatch deep-links the official IDL inventory pin when no public live URL exists.
+## Hoodoo Mountain (Avista · Pano AI)
+
+| Field | Value |
+|-------|-------|
+| Summit | Hoodoo Mountain, Bonner County, ID (~5,091 ft; Blanchard USGS) |
+| Coordinates | `48.078877, -116.954031` (matches historic summit / Bonner County repeater site) |
+| Owner / provider | Avista / **Pano AI** (IDL spells provider `Pano Al`) |
+| IDL status | Active; inventory row created **2026-06-17**; `CameraLiveViewURL` = **null** |
+| Supervisory area | POL (IDL) · private landowner (PVT) |
+
+### Site history
+
+- Historic fire lookout (cupola 1923 → L-4 1930s) abandoned by mid-1930s; site became an electronics / communications location ([Idaho Fire Lookouts](https://www.idahofirelookouts.com/cda-region/hoodoo-mountain-lookout/)).
+- Longstanding Bonner County VHF repeater location (~48.08053, -116.9536).
+- Avista contracted **Pano AI** for wildfire detection cameras (WA UTC / Idaho WMP testimony): 360° panoramas ~every 1–2 minutes, Pano Intelligence Center verification, agency onboarding. Avista reported 10 cameras in 2024 (3 Idaho / 7 Washington) and further builds afterward; coordinates placements with IDL and the Idaho Fire Camera Interoperability Committee.
+
+### Where the live stream actually lives
+
+| Surface | URL | Public? |
+|---------|-----|---------|
+| **Avista Wildfire Watch tenant** | https://avista.wildfirewatch.com/ | **No** — SPA login; `robots.txt` Disallow `/`; CSP talks to `*.pano.ai` + `api.wildfirewatch.com` |
+| **Pano 360 shell** | https://360.pano.ai/ | Agency login (same product family) |
+| **Contrast: WA DNR public share** | https://wadnr.wildfirewatch.com/ | **Yes** — DNR opted into Pano’s public-feed feature (Jul 2025) |
+| IDL Fire Camera map pin | IDL webappviewer marker at Hoodoo coords | Inventory / viewshed only — **not** the live stream |
+
+**Conclusion:** Hoodoo’s live imagery is on **Avista’s Pano Wildfire Watch / Pano 360 tenant**, not ALERTWest and not a public page. Former public-looking `/station/{uuid}` links on `avista.wildfirewatch.com` now 404; IDL has not published a live URL for any Avista/Pano Idaho stations (Gold Mountain, Gold Cup, Hoodoo, etc.). Access path for responders: Avista/Pano agency onboarding (Avista reported 340+ camera user accounts by fall 2025).
+
 
 ## Camera feed wall (collapsed by default)
 
