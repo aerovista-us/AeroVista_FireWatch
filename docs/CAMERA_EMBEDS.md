@@ -8,13 +8,29 @@ Public feed cards open provider pages in a new tab:
 
 | Camera | Link target | Notes |
 |--------|-------------|-------|
-| **Hoodoo Mountain** | [Avista Wildfire Watch station](https://avista.wildfirewatch.com/station/8923711853cc4598ae76cc8ccae1393c) | Avista / Pano AI · Bonner County · public after ToS |
+| **Canfield Butte** | IDL inventory pin (`Canield Butte`) | AlertIdaho · KCSO land · install under 6 months · **no public live URL** |
+| **Blossom Mountain** | [Avista station](https://avista.wildfirewatch.com/station/6e35fedea98640ea9790af4c67554974) | Avista / Pano AI · Post Falls · public after ToS |
+| **Hoodoo Mountain** | [Avista station](https://avista.wildfirewatch.com/station/8923711853cc4598ae76cc8ccae1393c) | Avista / Pano AI · Bonner · public after ToS |
 | **Gold Mountain · Sagle** | [Avista station](https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9) | Avista / Pano AI · public after ToS |
 | **Gold Cup · Laclede** | [Avista station](https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72) | Avista / Pano AI · public after ToS |
+| **Initial Peak** | [ALERTWest 23606](https://alertwest.live/cam-console/23606) | IDL · Kootenai · public PTZ |
+| **Frost Peak** | [ALERTWest 23977](https://alertwest.live/cam-console/23977) | IDL · Kootenai · public (also nearest live to Kellogg Peak) |
+| **Kellogg Peak** | IDL inventory pin | IDL CAT · Active · provider **Other** · **`CameraLiveViewURL` null** — not on ALERTWest / Avista public |
 | **St. Joe Baldy / Black Mountain** | ALERTWest `cam-console/{id}` | Public live PTZ |
 | **FAA / CDA lake / 511** | Provider pages | Embed limits documented below |
 
-Optional nearby Avista station (not yet on the matrix): [Blossom Mountain · Post Falls](https://avista.wildfirewatch.com/station/6e35fedea98640ea9790af4c67554974) (Kootenai).
+### Kellogg Peak (Silver Valley)
+
+| Field | Value |
+|-------|-------|
+| Coordinates | `47.48846319, -116.12844543` |
+| Owner / area | IDL · CAT · private land (PVT) |
+| Provider | **Other** (not AlertIdaho / Pano) |
+| Status | Active |
+| Public live URL | **None** found (ALERTWest name search empty; Avista public API has no Kellogg station) |
+| Nearby public live | **Frost Peak** (~10 mi W) · Avista **Wardner** appears in IDL as Pano install but is **not** on `avista.api.wildfirewatch.com/public` yet |
+
+Until a live link is published, the matrix card opens the IDL Fire Camera map pin.
 
 ## Hoodoo Mountain (Avista · Pano AI)
 
@@ -59,7 +75,7 @@ Toggle control: `#camWallToggle` / `#cameraWall`.
 
 | Source | Why |
 |--------|-----|
-| **ALERTWest** (St. Joe Baldy, Black Mtn / console 8598) | Cloudflare Stream iframes did not play reliably in the dashboard — open the official `cam-console/{id}` instead |
+| **ALERTWest** (Initial Peak 23606, Frost Peak 23977, St. Joe Baldy 11053, Black Mtn 8598) | Cloudflare Stream iframes did not play reliably in the dashboard — open the official `cam-console/{id}` instead |
 | **Avista WildfireWatch** | `Content-Security-Policy: frame-ancestors 'none'` — open station links in a new tab |
 | **FAA WeatherCams** | Page may frame; image API `/api/cameras/.../images/last/` returns **401** without FAA session |
 | **CDA Resort live-feed** | Verkada embed domain-locked to `*.cdaresort.com` |
