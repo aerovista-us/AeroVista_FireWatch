@@ -67,7 +67,19 @@ Until a live link is published, the matrix card opens the IDL Fire Camera map pi
 
 | Source | How | Notes |
 |--------|-----|--------|
-| **Idaho 511** corridor cams | `https://511.idaho.gov/map/Cctv/{imageId}` JPEG snapshots | Loads only when the wall is expanded; auto-refresh ~90s while open. Full map is `https://511.idaho.gov/map` |
+| **Idaho 511** corridor cams | `https://511.idaho.gov/map/Cctv/{imageId}` snapshots | Loads only when the wall is expanded; auto-refresh ~90s while open. Full map: [511 Idaho Cameras](https://511.idaho.gov/map#Camera) |
+
+Current `SNAP_CAMS` image ids:
+
+| Label | Id | Notes |
+|-------|-----|-------|
+| US-95 / I-90 · Northwest Blvd | `1236` | CDA interchange (Lakewood / Exit 13–14); may return PNG |
+| I-90 - 4th of July Summit | `531` | |
+| I-90 - Cataldo | `528` | |
+| I-90 - Veterans Memorial | `534` | |
+| I-90 - Railroad Bridge | `545` | |
+| US-95 - Sandpoint | `574` | |
+| I-90 - Wallace | `521` | |
 
 Toggle control: `#camWallToggle` / `#cameraWall`.
 
@@ -93,7 +105,7 @@ Umami is wired inline via `AV:INJECT id="umami-analytics"` (host `https://stats.
 
 ## Maintaining 511 image IDs
 
-Image ids come from Idaho 511 camera list APIs (`images[].id`), not always the map icon `itemId`. Re-verify with a GET that returns `image/jpeg` before changing `SNAP_CAMS`.
+Image ids come from Idaho 511 camera URLs (`/map/Cctv/{id}`), not always the map icon `itemId`. Re-verify with a GET that returns an image (`image/jpeg` or `image/png`) before changing `SNAP_CAMS`.
 
 ## Maintaining Avista station IDs
 
