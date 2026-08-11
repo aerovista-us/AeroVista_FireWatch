@@ -8,10 +8,13 @@ Public feed cards open provider pages in a new tab:
 
 | Camera | Link target | Notes |
 |--------|-------------|-------|
-| **Hoodoo Mountain** | IDL Fire Camera map pin (`48.078877, -116.954031`) | Avista / Pano AI / POL / PVT — IDL inventory has **no** `CameraLiveViewURL` |
-| **Gold Mountain / Gold Cup** | IDL map pins | Former `avista.wildfirewatch.com/station/...` public pages currently 404 |
+| **Hoodoo Mountain** | [Avista Wildfire Watch station](https://avista.wildfirewatch.com/station/8923711853cc4598ae76cc8ccae1393c) | Avista / Pano AI · Bonner County · public after ToS |
+| **Gold Mountain · Sagle** | [Avista station](https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9) | Avista / Pano AI · public after ToS |
+| **Gold Cup · Laclede** | [Avista station](https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72) | Avista / Pano AI · public after ToS |
 | **St. Joe Baldy / Black Mountain** | ALERTWest `cam-console/{id}` | Public live PTZ |
 | **FAA / CDA lake / 511** | Provider pages | Embed limits documented below |
+
+Optional nearby Avista station (not yet on the matrix): [Blossom Mountain · Post Falls](https://avista.wildfirewatch.com/station/6e35fedea98640ea9790af4c67554974) (Kootenai).
 
 ## Hoodoo Mountain (Avista · Pano AI)
 
@@ -20,7 +23,8 @@ Public feed cards open provider pages in a new tab:
 | Summit | Hoodoo Mountain, Bonner County, ID (~5,091 ft; Blanchard USGS) |
 | Coordinates | `48.078877, -116.954031` (matches historic summit / Bonner County repeater site) |
 | Owner / provider | Avista / **Pano AI** (IDL spells provider `Pano Al`) |
-| IDL status | Active; inventory row created **2026-06-17**; `CameraLiveViewURL` = **null** |
+| Public station id | `8923711853cc4598ae76cc8ccae1393c` |
+| IDL status | Active; inventory row created **2026-06-17**; `CameraLiveViewURL` = **null** (IDL still has no live URL field) |
 | Supervisory area | POL (IDL) · private landowner (PVT) |
 
 ### Site history
@@ -33,12 +37,14 @@ Public feed cards open provider pages in a new tab:
 
 | Surface | URL | Public? |
 |---------|-----|---------|
-| **Avista Wildfire Watch tenant** | https://avista.wildfirewatch.com/ | **No** — SPA login; `robots.txt` Disallow `/`; CSP talks to `*.pano.ai` + `api.wildfirewatch.com` |
-| **Pano 360 shell** | https://360.pano.ai/ | Agency login (same product family) |
-| **Contrast: WA DNR public share** | https://wadnr.wildfirewatch.com/ | **Yes** — DNR opted into Pano’s public-feed feature (Jul 2025) |
+| **Avista Wildfire Watch (public)** | https://avista.wildfirewatch.com/ | **Yes** — view after accepting ToS; no login |
+| **Station deep links** | `/station/{id}` (see table above) | **Yes** — GCS may return HTTP 404 with the SPA shell; browsers still boot React Router and show the station |
+| **Public stations API** | `https://avista.api.wildfirewatch.com/public/camera-stations?pageSize=1000` | Lists Idaho stations + coords (CORS from Avista origin) |
+| **Pano 360 shell** | https://360.pano.ai/ | Agency login (operator product) |
+| **Contrast: WA DNR public share** | https://wadnr.wildfirewatch.com/ | Same Pano public-feed family |
 | IDL Fire Camera map pin | IDL webappviewer marker at Hoodoo coords | Inventory / viewshed only — **not** the live stream |
 
-**Conclusion:** Hoodoo’s live imagery is on **Avista’s Pano Wildfire Watch / Pano 360 tenant**, not ALERTWest and not a public page. Former public-looking `/station/{uuid}` links on `avista.wildfirewatch.com` now 404; IDL has not published a live URL for any Avista/Pano Idaho stations (Gold Mountain, Gold Cup, Hoodoo, etc.). Access path for responders: Avista/Pano agency onboarding (Avista reported 340+ camera user accounts by fall 2025).
+**Conclusion:** Hoodoo / Gold Mountain / Gold Cup live imagery is on **Avista’s public Wildfire Watch tenant** (`avista.wildfirewatch.com`). FireWatch matrix cards open the station URLs directly. IDL still omits `CameraLiveViewURL` for these rows. Agency/operator tooling remains on Pano 360 / authenticated tenants; the public SPA is ToS-gated only. Do not iframe Avista (`frame-ancestors 'none'`).
 
 
 ## Camera feed wall (collapsed by default)
@@ -54,7 +60,7 @@ Toggle control: `#camWallToggle` / `#cameraWall`.
 | Source | Why |
 |--------|-----|
 | **ALERTWest** (St. Joe Baldy, Black Mtn / console 8598) | Cloudflare Stream iframes did not play reliably in the dashboard — open the official `cam-console/{id}` instead |
-| **Avista WildfireWatch** | `Content-Security-Policy: frame-ancestors 'none'` |
+| **Avista WildfireWatch** | `Content-Security-Policy: frame-ancestors 'none'` — open station links in a new tab |
 | **FAA WeatherCams** | Page may frame; image API `/api/cameras/.../images/last/` returns **401** without FAA session |
 | **CDA Resort live-feed** | Verkada embed domain-locked to `*.cdaresort.com` |
 | **IDL camera inventory** | Heavy ArcGIS viewer — also on the **Fire cameras** map tab |
@@ -72,3 +78,14 @@ Umami is wired inline via `AV:INJECT id="umami-analytics"` (host `https://stats.
 ## Maintaining 511 image IDs
 
 Image ids come from Idaho 511 camera list APIs (`images[].id`), not always the map icon `itemId`. Re-verify with a GET that returns `image/jpeg` before changing `SNAP_CAMS`.
+
+## Maintaining Avista station IDs
+
+Re-check with:
+
+```text
+GET https://avista.api.wildfirewatch.com/public/camera-stations?pageSize=1000
+Origin: https://avista.wildfirewatch.com
+```
+
+Station URLs are `https://avista.wildfirewatch.com/station/{id}`.
