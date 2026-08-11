@@ -77,6 +77,9 @@
         const mapTab = control.closest('[data-map]');
         if (mapTab) return send('firewatch_map_tab', { map: clean(mapTab.textContent) });
 
+        const snap = control.closest('.cam-snap');
+        if (snap) return send('firewatch_camera_snapshot', { camera: clean(snap.querySelector('strong')?.textContent), cctv: clean(snap.dataset.cctv) });
+
         const camera = control.closest('.camera-card');
         if (camera) return send('firewatch_camera_open', { camera: clean(camera.querySelector('h3')?.textContent) });
 
@@ -106,6 +109,10 @@
     @media(max-width:760px){.topbar{position:relative;height:auto;grid-template-columns:1fr auto}.brand{border:0}.top-state{grid-column:1/-1;grid-row:2;width:100%;min-height:34px;border-top:1px solid var(--line)}.top-actions{border:0;padding-right:14px}.auto{display:none}.shell{display:block}aside{position:relative;top:auto;height:auto;padding:15px;border:0;border-bottom:1px solid var(--line)}.locations{display:flex;overflow:auto}.location{min-width:175px}.rule,.ladder,.safety{display:none}main{padding:27px 15px 20px}.hero{align-items:start}.stamp small{display:none}.map-wrap{height:510px}.launch-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:480px){.brand{padding:0 10px}.brand-copy{display:none}.top-actions{gap:5px;padding-right:8px}.top-actions button{padding:8px;font-size:9px}.hero{display:block}.stamp{margin-top:18px;justify-items:start}.metrics,.context-grid,.launch-grid,.camera-grid{grid-template-columns:1fr}.context-card:last-child{grid-column:auto}.metric{min-height:103px}.map-wrap{height:480px}.map-open{left:15px;text-align:center}footer{flex-direction:column;gap:18px}}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.001ms!important;transition-duration:.001ms!important}}
+    .cam-wall{border-top:1px solid var(--line)}.cam-wall-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px 20px;border:0;background:#0e1216;color:inherit;text-align:left}.cam-wall-toggle:hover{background:#14191f}.cam-wall-toggle strong{display:block;margin:6px 0 3px;font-size:14px;font-weight:560}.cam-wall-toggle small{display:block;color:#68747e;font-size:9px}.cam-wall-chevron{flex:none;width:28px;height:28px;display:grid;place-items:center;border:1px solid #343c45;color:#a9b2ba;font:700 16px Consolas,monospace}.cam-wall-toggle[aria-expanded="true"] .cam-wall-chevron{border-color:rgba(255,75,62,.45);color:white}.cam-wall-body[hidden]{display:none}.cam-section-label{padding:11px 16px;background:#0e1216;color:#606b74;font:700 8px Consolas,monospace;letter-spacing:.12em;border-bottom:1px solid var(--line)}.cam-snap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}.cam-snap{position:relative;min-width:0;background:#101419;display:flex;flex-direction:column}.cam-snap a.thumb{display:block;background:#0b0d10;border-bottom:1px solid var(--soft)}.cam-snap img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;background:#0b0d10}.cam-snap-meta{padding:11px 12px;display:flex;justify-content:space-between;align-items:start;gap:8px}.cam-snap-meta strong{display:block;font-size:11px;font-weight:580}.cam-snap-meta small{display:block;margin-top:4px;color:#68747e;font-size:9px;line-height:1.4}.cam-snap-meta span{color:#65717b;font:700 8px Consolas,monospace;letter-spacing:.06em;white-space:nowrap}
+    @media(max-width:1080px){.cam-snap-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){.cam-snap-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.cam-snap-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -151,7 +158,17 @@
         <div class="heading"><div><div class="eyebrow">LIVE MAP SURFACE</div><h2 id="mapTitle">Idaho fires</h2></div><div class="tabs" id="mapTabs"></div></div>
         <div class="map-wrap"><iframe id="mapFrame" title="Official Idaho wildfire map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-badge"><b><i></i>LIVE EXTERNAL LAYER</b><small id="mapCaption">Official IRWIN incident layer</small></div><a class="map-open" id="mapOpen" target="_blank" rel="noopener">↗ OPEN OFFICIAL FULL MAP</a></div>
       </section>
-      <section class="panel"><div class="heading"><div><div class="eyebrow">VISUAL CONFIRMATION NETWORK</div><h2>FireWatch camera matrix</h2></div><span class="camera-note">FIRE AI → HORIZON → TRAFFIC FALLBACK</span></div><div class="camera-grid" id="cameraGrid"></div></section>
+      <section class="panel">
+        <div class="heading"><div><div class="eyebrow">VISUAL CONFIRMATION NETWORK</div><h2>FireWatch camera matrix</h2></div><span class="camera-note">FIRE AI → HORIZON → TRAFFIC FALLBACK</span></div>
+        <div class="camera-grid" id="cameraGrid"></div>
+        <div class="cam-wall">
+          <button type="button" id="camWallToggle" class="cam-wall-toggle" aria-expanded="false" aria-controls="cameraWall">
+            <span><span class="eyebrow">IDAHO 511 CORRIDOR</span><strong>Camera feed wall</strong><small>In-page snapshots · loads and auto-refreshes only when opened</small></span>
+            <span class="cam-wall-chevron" aria-hidden="true">+</span>
+          </button>
+          <div id="cameraWall" class="cam-wall-body" hidden></div>
+        </div>
+      </section>
       <div class="lower">
         <section class="panel"><div class="heading"><div><div class="eyebrow">ACTIVE BULLETINS</div><h2>NWS alert stream</h2></div><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener" class="mono" style="font-size:9px;color:#75818b">NWS SPOKANE ↗</a></div><div class="hazards" id="hazards"><div class="empty"><span>…</span><div><strong>Loading official point alerts</strong><small>NWS API is queried directly from this browser.</small></div></div></div></section>
         <section class="panel"><div class="heading"><div><div class="eyebrow">TELEMETRY HEALTH</div><h2>Source integrity</h2></div></div><div class="health" id="health"></div></section>
@@ -182,6 +199,15 @@
       {n:'CDA Lake Live',a:'Downtown lake horizon and smoke-direction context',t:'VISUAL',k:'visual',u:'https://www.cdaresort.com/live-feed/'},
       {n:'Idaho 511 Cameras',a:'US-95, I-90 and Fourth of July Summit viewpoints',t:'VISUAL',k:'visual',u:'https://511.idaho.gov/cctv'}
     ];
+    /* Idaho 511 snapshots embed; AlertWest Stream iframes did not play reliably cross-origin - keep as links. */
+    const SNAP_CAMS=[
+      {n:'I-90 - 4th of July Summit',a:'East of CDA - ridge corridor',id:531},
+      {n:'I-90 - Cataldo',a:'Silver Valley approach',id:528},
+      {n:'I-90 - Veterans Memorial',a:'Coeur d\'Alene lake crossing',id:534},
+      {n:'I-90 - Railroad Bridge',a:'Post Falls corridor',id:545},
+      {n:'US-95 - Sandpoint',a:'Bonner County north',id:574},
+      {n:'I-90 - Wallace',a:'East Panhandle corridor',id:521}
+    ];
     const SOURCES=[
       {n:'ALERT! Kootenai',r:'Official evacuation action',u:'https://www.kcsheriff.com/228/Alert-Kootenai',c:'red'},
       {n:'Watch Duty',r:'Fast incident intelligence',u:'https://app.watchduty.org/',c:'amber'},
@@ -197,12 +223,44 @@
     const $=id=>document.getElementById(id);
     const feedState={alerts:null,wind:null,restrictions:null,incidents:null};
     const cache=new Map();
-    let locationState=LOCATIONS[0],lastCheck=null,refreshing=false,refreshQueued=false,lastHazardCount=0,toastTimer;
+    let locationState=LOCATIONS[0],lastCheck=null,refreshing=false,refreshQueued=false,lastHazardCount=0,toastTimer,snapTimer=null,wallLoaded=false;
     function esc(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
     function renderLocations(){ $('locations').innerHTML=LOCATIONS.map((x,i)=>`<button class="location ${x.name===locationState.name?'active':''}" data-i="${i}"><span>${x.short}</span><strong>${x.name}</strong><small>${x.lat.toFixed(2)} / ${Math.abs(x.lon).toFixed(2)}W</small></button>`).join('');document.querySelectorAll('.location').forEach(b=>b.onclick=()=>{locationState=LOCATIONS[+b.dataset.i];$('locationTitle').textContent=locationState.name;renderLocations();refresh()}) }
     function setMap(id){const m=MAPS.find(x=>x.id===id)||MAPS[0];$('mapTitle').textContent=m.label;$('mapCaption').textContent=m.caption;$('mapFrame').src=m.src;$('mapOpen').href=m.href;$('mapTabs').innerHTML=MAPS.map(x=>`<button class="${x.id===m.id?'active':''}" data-map="${x.id}">${x.label}</button>`).join('');document.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>setMap(b.dataset.map))}
     function renderLaunch(){ $('launchGrid').innerHTML=SOURCES.map((s,i)=>`<a class="launch ${s.c}" href="${s.u}" target="_blank" rel="noopener"><span>0${i+1}</span><div><strong>${s.n}</strong><small>${s.r}</small></div><em>↗</em></a>`).join('') }
     function renderCameras(){ $('cameraGrid').innerHTML=CAMERAS.map(c=>`<a class="camera-card" href="${c.u}" target="_blank" rel="noopener"><div><div class="cam-top"><span class="cam-type ${c.k}">${c.t}</span><span class="cam-live"><i></i> PUBLIC FEED</span></div><h3>${c.n}</h3><p>${c.a}</p></div><div class="cam-action"><span>OPEN LIVE CAMERA</span><span>↗</span></div></a>`).join('') }
+    function snapUrl(id){return `https://511.idaho.gov/map/Cctv/${id}?t=${Date.now()}`}
+    function renderCameraWall(){
+      const snaps=SNAP_CAMS.map(c=>`<article class="cam-snap" data-cctv="${c.id}"><a class="thumb" href="https://511.idaho.gov/map" target="_blank" rel="noopener"><img src="${snapUrl(c.id)}" alt="${esc(c.n)} traffic camera" loading="lazy" decoding="async" referrerpolicy="no-referrer"></a><div class="cam-snap-meta"><div><strong>${esc(c.n)}</strong><small>${esc(c.a)}</small></div><span>511</span></div></article>`).join('');
+      $('cameraWall').innerHTML=`<div class="cam-section-label">IDAHO 511 CORRIDOR SNAPSHOTS · AUTO-REFRESH ~90S WHILE OPEN</div><div class="cam-snap-grid">${snaps}</div>`;
+      wallLoaded=true;
+    }
+    function refreshSnapshots(){
+      document.querySelectorAll('.cam-snap[data-cctv]').forEach(card=>{
+        const id=card.dataset.cctv,img=card.querySelector('img');
+        if(!img)return;
+        const next=new Image();
+        next.decoding='async';
+        next.onload=()=>{img.src=next.src};
+        next.src=snapUrl(id);
+      });
+    }
+    function setCameraWallOpen(open){
+      const toggle=$('camWallToggle'),wall=$('cameraWall'),chevron=toggle.querySelector('.cam-wall-chevron');
+      toggle.setAttribute('aria-expanded',open?'true':'false');
+      if(chevron)chevron.textContent=open?'−':'+';
+      wall.hidden=!open;
+      if(window.umami&&typeof window.umami.track==='function')window.umami.track('firewatch_camera_wall_toggle',{open:open?'true':'false'});
+      if(open){
+        if(!wallLoaded)renderCameraWall();
+        else refreshSnapshots();
+        if(!snapTimer)snapTimer=setInterval(refreshSnapshots,90000);
+      }else if(snapTimer){
+        clearInterval(snapTimer);
+        snapTimer=null;
+      }
+    }
+    $('camWallToggle').onclick=()=>setCameraWallOpen($('camWallToggle').getAttribute('aria-expanded')!=='true');
     function locationKey(loc){return `${loc.lat.toFixed(4)},${loc.lon.toFixed(4)}`}
     async function getJson(url,accept='application/json'){const res=await fetch(url,{headers:{Accept:accept}});if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();if(data&&data.error)throw new Error(data.error.message||'Feed error');return data}
     async function cached(key,maxAge,loader){const hit=cache.get(key);if(hit&&Date.now()-hit.time<maxAge)return hit.value;const value=await loader();cache.set(key,{time:Date.now(),value});return value}
