@@ -114,6 +114,7 @@
     @media(max-width:760px){.cam-snap-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:480px){.cam-snap-grid{grid-template-columns:1fr}}
     .weather-card{min-height:220px}.weather-card strong{margin:10px 0 4px;font-size:clamp(26px,3vw,32px)}.weather-cond{margin:0 0 12px;color:#c5ccd1;font-size:12px;font-weight:520;line-height:1.35}.weather-meta{margin:0;display:grid;gap:7px}.weather-meta div{display:grid;grid-template-columns:78px minmax(0,1fr);gap:8px;align-items:baseline}.weather-meta dt{margin:0;color:#66727c;font:700 8px Consolas,monospace;letter-spacing:.1em}.weather-meta dd{margin:0;color:#aeb6bc;font-size:10px;line-height:1.35}
+    .incident-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--soft)}.incident-tools a{color:var(--teal);font:700 8px Consolas,monospace;letter-spacing:.04em}.incident-tools a:hover{color:white}
   </style>
 </head>
 <body>
@@ -153,7 +154,7 @@
       <section class="context-grid" aria-label="Current fire weather and incident context">
         <article class="context-card weather-card"><label>NWS WEATHER NOW</label><strong id="weatherTemp">LOADING</strong><div class="weather-cond" id="weatherCond">Official hourly forecast for selected location</div><dl class="weather-meta" id="weatherMeta"></dl><a class="direct" id="weatherLink" href="https://www.weather.gov/otx/" target="_blank" rel="noopener">OPEN NWS ↗</a></article>
         <article class="context-card"><label>AIR QUALITY</label><strong>OPEN AIRNOW</strong><small>Official live smoke and PM2.5 map. Automatic AQI requires a protected AirNow API proxy; no key is exposed in this page.</small><a class="direct" href="https://fire.airnow.gov/" target="_blank" rel="noopener">LIVE FIRE + SMOKE MAP ↗</a></article>
-        <article class="context-card"><label>WFIGS CURRENT FIRE PERIMETERS · 100 MI</label><strong id="incidentValue">LOADING</strong><small id="incidentDetail">Official current interagency perimeter feed; absence of a perimeter does not prove no fire.</small><div class="incident-list" id="incidentList"></div></article>
+        <article class="context-card"><label>CURRENT FIRES · 100 MI</label><strong id="incidentValue">LOADING</strong><small id="incidentDetail">Official WFIGS incident points; absence of a report does not prove no fire.</small><div class="incident-list" id="incidentList"></div><div class="incident-tools" id="incidentTools"></div></article>
       </section>
       <section class="panel">
         <div class="heading"><div><div class="eyebrow">LIVE MAP SURFACE</div><h2 id="mapTitle">Idaho fires</h2></div><div class="tabs" id="mapTabs"></div></div>
@@ -192,13 +193,14 @@
     ];
     const CAMERAS=[
       {n:'IDL Camera Network',a:'Statewide Idaho inventory, operators and status',t:'MAP',k:'map',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c'},
+      {n:'Hoodoo Mountain',a:'Avista · Pano AI · POL supervisory area · open IDL map pin (no public live URL published)',t:'AI FIRE',k:'',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c&marker=-116.954031,48.078877,000000,Hoodoo%20Mountain&level=11'},
       {n:'St. Joe Baldy',a:'St. Joe and southern Panhandle directional timelapse',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/11053'},
-      {n:'Gold Mountain · Sagle',a:'Sagle, Sandpoint and southern Bonner County',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/635b1d09b58342638f7f78b8a404bea9'},
-      {n:'Gold Cup · Laclede',a:'Laclede, Priest River and the US-2 corridor',t:'AI FIRE',k:'',u:'https://avista.wildfirewatch.com/station/c28354b46e084947aff4330f8d658b72'},
-      {n:'ALERTWest Console 8598',a:'North Panhandle live camera and incident timelapse',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/8598'},
+      {n:'Gold Mountain · Sagle',a:'Avista · Pano AI · open IDL inventory pin (public WildfireWatch station pages are currently offline)',t:'AI FIRE',k:'',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c&marker=-116.494546,48.235604,000000,Gold%20Mountain&level=11'},
+      {n:'Gold Cup · Laclede',a:'Avista · Pano AI · open IDL inventory pin (public WildfireWatch station pages are currently offline)',t:'AI FIRE',k:'',u:'https://gis1.idl.idaho.gov/portal/apps/webappviewer/index.html?id=1621ef59f3d74632a4e49b2cdd9a104c&marker=-116.804653,48.187294,000000,Gold%20Cup%20Mountain&level=11'},
+      {n:'Black Mountain',a:'North Panhandle ALERTWest PTZ / IDL Black Mountain',t:'FIRE PTZ',k:'',u:'https://alertwest.live/cam-console/8598'},
       {n:'Mica Peak FAA',a:'Southwest horizon and regional visibility fallback',t:'VISUAL',k:'visual',u:'https://weathercams.faa.gov/map/-117.08111%2C46.93756%2C8/rco/1507/details'},
       {n:'CDA Lake Live',a:'Downtown lake horizon and smoke-direction context',t:'VISUAL',k:'visual',u:'https://www.cdaresort.com/live-feed/'},
-      {n:'Idaho 511 Cameras',a:'US-95, I-90 and Fourth of July Summit viewpoints',t:'VISUAL',k:'visual',u:'https://511.idaho.gov/cctv'}
+      {n:'Idaho 511 Cameras',a:'US-95, I-90 and Fourth of July Summit viewpoints',t:'VISUAL',k:'visual',u:'https://511.idaho.gov/map'}
     ];
     /* Idaho 511 snapshots embed; AlertWest Stream iframes did not play reliably cross-origin - keep as links. */
     const SNAP_CAMS=[
@@ -219,13 +221,22 @@
     ];
     const FEEDS={
       restrictions:'https://gis1.idl.idaho.gov/arcgis/rest/services/Portal/FireRestrictions/FeatureServer/1/query',
-      incidents:'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0/query'
+      incidentLocations:'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Incident_Locations_Current/FeatureServer/0/query',
+      incidentPerimeters:'https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0/query'
     };
+    const INCIDENT_TOOLS=[
+      {n:'Idaho Fire Map',u:'https://www.idl.idaho.gov/fire-management/idaho-fire-map/'},
+      {n:'Watch Duty',u:'https://app.watchduty.org/'},
+      {n:'InciWeb',u:'https://inciweb.wildfire.gov/'},
+      {n:'NIFC Open Data',u:'https://data-nifc.opendata.arcgis.com/'},
+      {n:'PulsePoint',u:'https://web.pulsepoint.org/'}
+    ];
     const $=id=>document.getElementById(id);
     const feedState={alerts:null,wind:null,restrictions:null,incidents:null};
     const cache=new Map();
     let locationState=LOCATIONS[0],lastCheck=null,refreshing=false,refreshQueued=false,lastHazardCount=0,toastTimer,snapTimer=null,wallLoaded=false;
     function esc(value){return String(value??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+    function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
     function renderLocations(){ $('locations').innerHTML=LOCATIONS.map((x,i)=>`<button class="location ${x.name===locationState.name?'active':''}" data-i="${i}"><span>${x.short}</span><strong>${x.name}</strong><small>${x.lat.toFixed(2)} / ${Math.abs(x.lon).toFixed(2)}W</small></button>`).join('');document.querySelectorAll('.location').forEach(b=>b.onclick=()=>{locationState=LOCATIONS[+b.dataset.i];$('locationTitle').textContent=locationState.name;renderLocations();refresh()}) }
     function setMap(id){const m=MAPS.find(x=>x.id===id)||MAPS[0];$('mapTitle').textContent=m.label;$('mapCaption').textContent=m.caption;$('mapFrame').src=m.src;$('mapOpen').href=m.href;$('mapTabs').innerHTML=MAPS.map(x=>`<button class="${x.id===m.id?'active':''}" data-map="${x.id}">${x.label}</button>`).join('');document.querySelectorAll('[data-map]').forEach(b=>b.onclick=()=>setMap(b.dataset.map))}
     function renderLaunch(){ $('launchGrid').innerHTML=SOURCES.map((s,i)=>`<a class="launch ${s.c}" href="${s.u}" target="_blank" rel="noopener"><span>0${i+1}</span><div><strong>${s.n}</strong><small>${s.r}</small></div><em>↗</em></a>`).join('') }
@@ -263,15 +274,84 @@
     }
     $('camWallToggle').onclick=()=>setCameraWallOpen($('camWallToggle').getAttribute('aria-expanded')!=='true');
     function locationKey(loc){return `${loc.lat.toFixed(4)},${loc.lon.toFixed(4)}`}
-    async function getJson(url,accept='application/json'){const res=await fetch(url,{headers:{Accept:accept}});if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();if(data&&data.error)throw new Error(data.error.message||'Feed error');return data}
+    async function getJson(url,accept='application/json',retries=1){
+      const res=await fetch(url,{headers:{Accept:accept}});
+      if(!res.ok){
+        if(res.status===429&&retries>0){await sleep(2800);return getJson(url,accept,retries-1)}
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const data=await res.json();
+      if(data&&data.error){
+        const msg=data.error.message||'Feed error';
+        if((data.error.code===429||/too many requests/i.test(msg))&&retries>0){await sleep(2800);return getJson(url,accept,retries-1)}
+        throw new Error(msg);
+      }
+      return data;
+    }
     async function cached(key,maxAge,loader){const hit=cache.get(key);if(hit&&Date.now()-hit.time<maxAge)return hit.value;const value=await loader();cache.set(key,{time:Date.now(),value});return value}
     async function fetchAlerts(loc){const data=await getJson(`https://api.weather.gov/alerts/active?point=${loc.lat},${loc.lon}`,'application/geo+json');return Array.isArray(data.features)?data.features:[]}
     async function fetchWind(loc){return cached(`wind:${locationKey(loc)}`,300000,async()=>{const point=await getJson(`https://api.weather.gov/points/${loc.lat},${loc.lon}`,'application/geo+json');const props=point?.properties||{};const hourly=props.forecastHourly;if(!hourly)throw new Error('No hourly forecast endpoint');const forecast=await getJson(hourly,'application/geo+json');const period=forecast?.properties?.periods?.[0];if(!period)throw new Error('No current hourly period');const place=props.relativeLocation?.properties||{};return{period,place:{city:place.city||loc.name,state:place.state||''},office:props.forecastOffice||'',link:`https://forecast.weather.gov/MapClick.php?lat=${loc.lat}&lon=${loc.lon}`}})}
     async function fetchRestrictions(loc){return cached(`restrictions:${locationKey(loc)}`,600000,async()=>{const q=new URLSearchParams({f:'json',geometry:`${loc.lon},${loc.lat}`,geometryType:'esriGeometryPoint',inSR:'4326',spatialRel:'esriSpatialRelIntersects',outFields:'Name,Stage,Rstrct_Are,DateEnacted,DateRescinded,UpcomingStage,Zones,last_edited_date',returnGeometry:'false'});const data=await getJson(`${FEEDS.restrictions}?${q}`);return data.features?.[0]?.attributes||null})}
-    async function fetchIncidents(loc){return cached(`incidents:${locationKey(loc)}`,300000,async()=>{const q=new URLSearchParams({f:'json',where:"attr_IncidentTypeCategory='WF'",geometry:`${loc.lon},${loc.lat}`,geometryType:'esriGeometryPoint',inSR:'4326',spatialRel:'esriSpatialRelIntersects',distance:'100',units:'esriSRUnit_StatuteMile',outFields:'poly_IncidentName,poly_GISAcres,poly_DateCurrent,attr_PercentContained,attr_FireDiscoveryDateTime,attr_InitialLatitude,attr_InitialLongitude,attr_ModifiedOnDateTime_dt,attr_IrwinID',returnGeometry:'false',orderByFields:'attr_ModifiedOnDateTime_dt DESC'});const data=await getJson(`${FEEDS.incidents}?${q}`);return Array.isArray(data.features)?data.features:[]})}
+    function normalizeIncidentFeatures(features,source){
+      return (Array.isArray(features)?features:[]).map(f=>{
+        const a=f.attributes||{};
+        if(source==='locations'){
+          return{attributes:{
+            poly_IncidentName:a.IncidentName,
+            poly_GISAcres:a.IncidentSize,
+            poly_DateCurrent:a.ModifiedOnDateTime_dt||a.FireDiscoveryDateTime,
+            attr_PercentContained:a.PercentContained,
+            attr_InitialLatitude:a.InitialLatitude,
+            attr_InitialLongitude:a.InitialLongitude,
+            sourceLabel:'WFIGS location'
+          }};
+        }
+        return{attributes:{...a,sourceLabel:'WFIGS perimeter'}};
+      });
+    }
+    async function fetchIncidents(loc){
+      return cached(`incidents:${locationKey(loc)}`,600000,async()=>{
+        const pointQ=new URLSearchParams({
+          f:'json',
+          where:"IncidentTypeCategory='WF'",
+          geometry:`${loc.lon},${loc.lat}`,
+          geometryType:'esriGeometryPoint',
+          inSR:'4326',
+          spatialRel:'esriSpatialRelIntersects',
+          distance:'100',
+          units:'esriSRUnit_StatuteMile',
+          outFields:'IncidentName,PercentContained,FireDiscoveryDateTime,InitialLatitude,InitialLongitude,ModifiedOnDateTime_dt,POOCounty,POOState,IncidentSize',
+          returnGeometry:'false',
+          resultRecordCount:'25'
+        });
+        try{
+          const data=await getJson(`${FEEDS.incidentLocations}?${pointQ}`);
+          return normalizeIncidentFeatures(data.features,'locations');
+        }catch(_){
+          const periQ=new URLSearchParams({
+            f:'json',
+            where:"attr_IncidentTypeCategory='WF'",
+            geometry:`${loc.lon},${loc.lat}`,
+            geometryType:'esriGeometryPoint',
+            inSR:'4326',
+            spatialRel:'esriSpatialRelIntersects',
+            distance:'100',
+            units:'esriSRUnit_StatuteMile',
+            outFields:'poly_IncidentName,poly_GISAcres,poly_DateCurrent,attr_PercentContained,attr_InitialLatitude,attr_InitialLongitude,attr_ModifiedOnDateTime_dt',
+            returnGeometry:'false',
+            resultRecordCount:'25'
+          });
+          const data=await getJson(`${FEEDS.incidentPerimeters}?${periQ}`);
+          return normalizeIncidentFeatures(data.features,'perimeters');
+        }
+      });
+    }
+    function renderIncidentTools(){
+      $('incidentTools').innerHTML=INCIDENT_TOOLS.map(t=>`<a href="${esc(t.u)}" target="_blank" rel="noopener">${esc(t.n)} ↗</a>`).join('');
+    }
     function healthRow(name,detail,state,url,badge){return `<a class="source ${state}" href="${url}" target="_blank" rel="noopener"><i></i><div><strong>${name}</strong><small>${detail}</small></div><time>${badge}</time></a>`}
     function autoHealth(name,key,url){const state=feedState[key];return healthRow(name,state===true?'Automatic feed responded this refresh':state===false?'Automatic feed failed—direct source ready':'Waiting for first check',state===true?'live':state===false?'warn':'',url,state===true?'LIVE':state===false?'ERROR':'CHECK')}
-    function updateHealth(){const live=Object.values(feedState).filter(Boolean).length;$('coverage').textContent=`${live}/4`;$('health').innerHTML=autoHealth('NWS active alerts','alerts','https://www.weather.gov/otx/')+autoHealth('NWS hourly weather','wind','https://www.weather.gov/otx/')+autoHealth('IDL fire restrictions','restrictions','https://www.idl.idaho.gov/fire-management/fire-restrictions-finder/')+autoHealth('WFIGS current perimeters','incidents','https://services3.arcgis.com/T4QMspbfLg3qTGWY/arcgis/rest/services/WFIGS_Interagency_Perimeters_Current/FeatureServer/0')+healthRow('Kootenai County Sheriff','Binding evacuation orders—manual verification','link','https://www.kcsheriff.com/228/Alert-Kootenai','LINK')+healthRow('Watch Duty + ALERTWest','Human and camera fallback paths','link','https://app.watchduty.org/','LINK')}
+    function updateHealth(){const live=Object.values(feedState).filter(Boolean).length;$('coverage').textContent=`${live}/4`;$('health').innerHTML=autoHealth('NWS active alerts','alerts','https://www.weather.gov/otx/')+autoHealth('NWS hourly weather','wind','https://www.weather.gov/otx/')+autoHealth('IDL fire restrictions','restrictions','https://www.idl.idaho.gov/fire-management/fire-restrictions-finder/')+autoHealth('WFIGS current fires','incidents','https://data-nifc.opendata.arcgis.com/')+healthRow('Kootenai County Sheriff','Binding evacuation orders—manual verification','link','https://www.kcsheriff.com/228/Alert-Kootenai','LINK')+healthRow('Watch Duty + ALERTWest','Human and camera fallback paths','link','https://app.watchduty.org/','LINK')}
     function formatDewpointF(dp){if(!dp||dp.value==null||!Number.isFinite(+dp.value))return '—';return `${Math.round((+dp.value*9/5)+32)}°F`}
     function formatPct(obj){if(!obj||obj.value==null||!Number.isFinite(+obj.value))return '—';return `${Math.round(+obj.value)}%`}
     function formatHourLabel(iso){if(!iso)return 'Current hour';try{return new Date(iso).toLocaleString([],{weekday:'short',hour:'numeric',minute:'2-digit'})}catch(_){return 'Current hour'}}
@@ -298,8 +378,22 @@
     function renderRestriction(r){const metric=$('restrictionMetric');metric.className='metric restriction';if(!r){$('restrictionValue').textContent='VERIFY IDL';$('restrictionDetail').textContent='No matching restriction zone returned for this coordinate';return}const stage=String(r.Stage||'Not listed');$('restrictionValue').textContent=stage.toUpperCase();$('restrictionDetail').textContent=`${r.Rstrct_Are||r.Name||'IDL zone'}${r.DateEnacted?' · enacted '+new Date(r.DateEnacted).toLocaleDateString():''}`;if(/stage\s*ii/i.test(stage))metric.classList.add('stage2');else if(/stage\s*i/i.test(stage))metric.classList.add('stage1');else if(/none|no restriction/i.test(stage))metric.classList.add('none')}
     function milesBetween(a,b,c,d){const rad=x=>x*Math.PI/180,R=3958.8,dl=rad(c-a),dn=rad(d-b),v=Math.sin(dl/2)**2+Math.cos(rad(a))*Math.cos(rad(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(v))}
     function formatAcres(n){if(n==null||n===''||!Number.isFinite(+n))return 'acreage pending';const v=+n;return v>=10000?`${Math.round(v/1000)}k acres`:v>=100?`${Math.round(v).toLocaleString()} acres`:`${v.toFixed(v<10?1:0)} acres`}
-    function renderIncidents(features,loc){const rows=features.map(f=>{const a=f.attributes||{},hasPoint=a.attr_InitialLatitude!=null&&a.attr_InitialLongitude!=null,lat=+a.attr_InitialLatitude,lon=+a.attr_InitialLongitude;return {...a,distance:hasPoint&&Number.isFinite(lat)&&Number.isFinite(lon)?milesBetween(loc.lat,loc.lon,lat,lon):Infinity}}).sort((a,b)=>a.distance-b.distance);$('incidentValue').textContent=`${rows.length} REPORTED`;$('incidentDetail').textContent=`Current wildfire perimeters within 100 miles · ${rows.length?'nearest shown below':'no current perimeter returned; verify other sources'}`;$('incidentList').innerHTML=rows.slice(0,3).map(a=>{const hasContainment=a.attr_PercentContained!=null&&a.attr_PercentContained!==''&&Number.isFinite(+a.attr_PercentContained),contained=hasContainment?` · ${Math.round(+a.attr_PercentContained)}% contained`:'';const distance=Number.isFinite(a.distance)?`${Math.round(a.distance)} mi`:'distance pending';return `<a class="incident" href="https://www.idl.idaho.gov/fire-management/idaho-fire-map/" target="_blank" rel="noopener"><b>${esc(a.poly_IncidentName||'Unnamed incident')}</b><span>${distance}</span><small>${formatAcres(a.poly_GISAcres)}${contained} · perimeter updated ${a.poly_DateCurrent?new Date(a.poly_DateCurrent).toLocaleDateString():'date pending'}</small></a>`}).join('')}
-    function renderFeedFailure(key){if(key==='alerts'){$('hazardCount').textContent='?';$('hazardSummary').textContent='Direct NWS fallback required';$('hazards').innerHTML=`<div class="empty"><span>!</span><div><strong>Automatic NWS alert feed unavailable</strong><small><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener">Open NWS Spokane directly ↗</a></small></div></div>`}if(key==='wind'){$('weatherTemp').textContent='VERIFY NWS';$('weatherCond').textContent='Automatic hourly forecast unavailable; direct source ready';$('weatherMeta').innerHTML='';$('weatherLink').href=`https://forecast.weather.gov/MapClick.php?lat=${locationState.lat}&lon=${locationState.lon}`}if(key==='restrictions'){$('restrictionMetric').className='metric restriction';$('restrictionValue').textContent='VERIFY IDL';$('restrictionDetail').textContent='Automatic zone query unavailable; use the official finder'}if(key==='incidents'){$('incidentValue').textContent='VERIFY MAP';$('incidentDetail').textContent='Automatic perimeter query unavailable; open the Idaho Fire Map';$('incidentList').innerHTML=''}}
+    function renderIncidents(features,loc){
+      const rows=features.map(f=>{
+        const a=f.attributes||{},hasPoint=a.attr_InitialLatitude!=null&&a.attr_InitialLongitude!=null,lat=+a.attr_InitialLatitude,lon=+a.attr_InitialLongitude;
+        return{...a,distance:hasPoint&&Number.isFinite(lat)&&Number.isFinite(lon)?milesBetween(loc.lat,loc.lon,lat,lon):Infinity};
+      }).sort((a,b)=>a.distance-b.distance);
+      $('incidentValue').textContent=`${rows.length} REPORTED`;
+      $('incidentDetail').textContent=`Current wildfire reports within 100 miles · ${rows.length?'nearest shown below':'none returned; use tools below'}`;
+      $('incidentList').innerHTML=rows.slice(0,3).map(a=>{
+        const hasContainment=a.attr_PercentContained!=null&&a.attr_PercentContained!==''&&Number.isFinite(+a.attr_PercentContained);
+        const contained=hasContainment?` · ${Math.round(+a.attr_PercentContained)}% contained`:'';
+        const distance=Number.isFinite(a.distance)?`${Math.round(a.distance)} mi`:'distance pending';
+        return `<a class="incident" href="https://www.idl.idaho.gov/fire-management/idaho-fire-map/" target="_blank" rel="noopener"><b>${esc(a.poly_IncidentName||'Unnamed incident')}</b><span>${distance}</span><small>${formatAcres(a.poly_GISAcres)}${contained} · updated ${a.poly_DateCurrent?new Date(a.poly_DateCurrent).toLocaleDateString():'date pending'}</small></a>`;
+      }).join('');
+      renderIncidentTools();
+    }
+    function renderFeedFailure(key){if(key==='alerts'){$('hazardCount').textContent='?';$('hazardSummary').textContent='Direct NWS fallback required';$('hazards').innerHTML=`<div class="empty"><span>!</span><div><strong>Automatic NWS alert feed unavailable</strong><small><a href="https://www.weather.gov/otx/" target="_blank" rel="noopener">Open NWS Spokane directly ↗</a></small></div></div>`}if(key==='wind'){$('weatherTemp').textContent='VERIFY NWS';$('weatherCond').textContent='Automatic hourly forecast unavailable; direct source ready';$('weatherMeta').innerHTML='';$('weatherLink').href=`https://forecast.weather.gov/MapClick.php?lat=${locationState.lat}&lon=${locationState.lon}`}if(key==='restrictions'){$('restrictionMetric').className='metric restriction';$('restrictionValue').textContent='VERIFY IDL';$('restrictionDetail').textContent='Automatic zone query unavailable; use the official finder'}if(key==='incidents'){$('incidentValue').textContent='USE TOOLS';$('incidentDetail').textContent='NIFC feed rate-limited or unavailable. Use the official tools below while automatic refresh retries.';$('incidentList').innerHTML=`<div class="empty" style="min-height:90px"><span>!</span><div><strong>Automatic incident list unavailable</strong><small>NIFC ArcGIS often throttles public browsers. Idaho Fire Map, Watch Duty, and InciWeb remain authoritative.</small></div></div>`;renderIncidentTools()}}
     async function refresh(){if(refreshing){refreshQueued=true;return}refreshing=true;$('refreshBtn').disabled=true;$('refreshBtn').textContent='↻ SYNCING';$('topStatus').textContent='SYNCING LIVE SOURCES';$('pulse').className='pulse';const loc={...locationState},key=locationKey(locationState);try{const results=await Promise.allSettled([fetchAlerts(loc),fetchWind(loc),fetchRestrictions(loc),fetchIncidents(loc)]);if(key!==locationKey(locationState)){refreshQueued=true;return}const names=['alerts','wind','restrictions','incidents'];results.forEach((result,i)=>feedState[names[i]]=result.status==='fulfilled');if(results[0].status==='fulfilled'){const features=results[0].value;lastHazardCount=features.length;renderHazards(features);$('hazardCount').textContent=features.length;$('hazardSummary').textContent=features.length?`${features.length} official active bulletin${features.length===1?'':'s'}`:'No active NWS point hazards'}else{lastHazardCount=0;renderFeedFailure('alerts')}if(results[1].status==='fulfilled')renderWind(results[1].value);else renderFeedFailure('wind');if(results[2].status==='fulfilled')renderRestriction(results[2].value);else renderFeedFailure('restrictions');if(results[3].status==='fulfilled')renderIncidents(results[3].value,loc);else renderFeedFailure('incidents');lastCheck=new Date();const failed=names.filter((name,i)=>results[i].status==='rejected');updateHealth();if(lastHazardCount){$('pulse').className='pulse warn';$('topStatus').textContent='NWS HAZARD ACTIVE — CHECK DETAILS'}else if(failed.length){$('pulse').className='pulse partial';$('topStatus').textContent='PARTIAL LIVE DATA — FALLBACKS READY'}else{$('pulse').className='pulse live';$('topStatus').textContent='LIVE SOURCES CONNECTED'}$('fallbackText').textContent=failed.length?`${failed.map(x=>x.toUpperCase()).join(', ')} could not be read automatically. Direct official links remain available.`:'All four automatic feeds responded.';$('fallback').className=failed.length?'fallback show':'fallback'}finally{refreshing=false;$('refreshBtn').disabled=false;$('refreshBtn').textContent='↻ REFRESH';updateTimes();if(refreshQueued){refreshQueued=false;setTimeout(refresh,0)}}}
     function renderHazards(features){if(!features.length){$('hazards').innerHTML='<div class="empty"><span>0</span><div><strong>No active NWS hazards at this point</strong><small>This does not replace county evacuation orders.</small></div></div>';return}$('hazards').innerHTML=features.map(f=>{const p=f.properties||{},sev=(p.severity||'unknown').toLowerCase(),link=p['@id']||f.id||'https://www.weather.gov/otx/';return `<a class="hazard" href="${esc(link)}" target="_blank" rel="noopener"><span class="sev ${esc(sev)}">${esc(p.severity||'Unknown')}</span><div><strong>${esc(p.headline||p.event||'Weather alert')}</strong><small>${p.expires?'Expires '+new Date(p.expires).toLocaleString():esc(p.urgency||'Unknown')+' urgency'}</small></div><span>↗</span></a>`}).join('')}
     function updateTimes(){if(!lastCheck)return;const sec=Math.max(0,Math.floor((Date.now()-lastCheck)/1000));$('relativeTime').textContent=sec<10?'JUST NOW':sec<60?sec+'S AGO':Math.floor(sec/60)+'M AGO';$('fullTime').textContent=lastCheck.toLocaleString()}
@@ -307,7 +401,7 @@
     async function copyPageLink(){try{await navigator.clipboard.writeText(location.href)}catch(_){const input=document.createElement('textarea');input.value=location.href;input.style.position='fixed';input.style.opacity='0';document.body.appendChild(input);input.select();document.execCommand('copy');input.remove()}showToast('FIREWATCH LINK COPIED — USE YOUR BROWSER MENU TO ADD TO HOME SCREEN')}
     async function sharePage(){const data={title:'AeroVista FireWatch Command',text:`Live North Idaho wildfire awareness for ${locationState.name}. Official sources and direct fallbacks.`,url:location.href};try{if(navigator.share&&/^https?:/.test(location.href)){await navigator.share(data);showToast('SHARE SHEET OPENED')}else await copyPageLink()}catch(err){if(err?.name!=='AbortError')await copyPageLink()}}
     $('shareBtn').onclick=sharePage;$('refreshBtn').onclick=refresh;$('locateBtn').onclick=()=>{if(!navigator.geolocation){$('fallbackText').textContent='Geolocation is not available in this browser.';$('fallback').className='fallback show';return}navigator.geolocation.getCurrentPosition(p=>{locationState={name:'Current location',short:'GPS',lat:+p.coords.latitude.toFixed(4),lon:+p.coords.longitude.toFixed(4)};$('locationTitle').textContent=locationState.name;renderLocations();refresh()},()=>{$('fallbackText').textContent='Location permission was declined. Saved regional locations remain active.';$('fallback').className='fallback show'})};
-    renderLocations();setMap('fire');renderCameras();renderLaunch();updateHealth();refresh();setInterval(refresh,60000);setInterval(updateTimes,1000);
+    renderLocations();setMap('fire');renderCameras();renderLaunch();renderIncidentTools();updateHealth();refresh();setInterval(refresh,60000);setInterval(updateTimes,1000);
   </script>
 </body>
 </html>

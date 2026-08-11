@@ -4,7 +4,16 @@ The camera matrix mixes **link-outs** with an optional **Idaho 511 camera feed w
 
 ## Camera matrix (always visible)
 
-Public feed cards (IDL, ALERTWest, Avista, FAA, CDA lake, Idaho 511 map) open provider pages in a new tab.
+Public feed cards open provider pages in a new tab:
+
+| Camera | Link target | Notes |
+|--------|-------------|-------|
+| **Hoodoo Mountain** | IDL Fire Camera map pin (`48.078877, -116.954031`) | Avista / Pano AI / POL / PVT — IDL inventory has **no** `CameraLiveViewURL` |
+| **Gold Mountain / Gold Cup** | IDL map pins | Former `avista.wildfirewatch.com/station/...` public pages currently 404 |
+| **St. Joe Baldy / Black Mountain** | ALERTWest `cam-console/{id}` | Public live PTZ |
+| **FAA / CDA lake / 511** | Provider pages | Embed limits documented below |
+
+Avista/Pano AI stations are enterprise-gated; FireWatch deep-links the official IDL inventory pin when no public live URL exists.
 
 ## Camera feed wall (collapsed by default)
 
