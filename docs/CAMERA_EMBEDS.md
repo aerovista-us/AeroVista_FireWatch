@@ -73,7 +73,8 @@ Current `SNAP_CAMS` image ids:
 
 | Label | Id | Notes |
 |-------|-----|-------|
-| US-95 / I-90 · Northwest Blvd | `1236` | CDA interchange (Lakewood / Exit 13–14); may return PNG |
+| US-95 / I-90 interchange | `1236` | CDA freeway interchange (Exit 13–14); may return PNG |
+| NW Blvd + Lakewood | `1157` | Surface intersection; may return PNG |
 | I-90 - 4th of July Summit | `531` | |
 | I-90 - Cataldo | `528` | |
 | I-90 - Veterans Memorial | `534` | |
